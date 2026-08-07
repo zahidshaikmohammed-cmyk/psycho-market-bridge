@@ -1,0 +1,10 @@
+{
+  "symbol": "NIFTY",
+  "timeframe": "5m",
+  "source": "PSYCHO_MARKET_BRIDGE_TEST",
+  "candles": [
+    {"time":"10:00","open":24600,"high":24620,"low":24590,"close":24615,"volume":100000},
+    {"time":"10:05","open":24615,"high":24640,"low":24610,"close":24635,"volume":125000},
+    {"time":"10:10","open":24635,"high":24650,"low":24620,"close":24625,"volume":110000}
+  ]
+}
