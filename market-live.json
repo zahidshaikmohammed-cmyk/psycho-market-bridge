@@ -1,0 +1,13 @@
+{
+  "status": "BRIDGE_ONLINE",
+  "bridge": "PSYCHO_MARKET_BRIDGE",
+  "generated_at": "2026-08-07T05:13:15.503810+00:00",
+  "test": {
+    "symbol": "NIFTY",
+    "timeframe": "5m",
+    "open": 24600,
+    "high": 24650,
+    "low": 24590,
+    "close": 24625
+  }
+}
