@@ -200,6 +200,70 @@ def fetch_daily(security_id):
 
     return normalize_candles(raw)
 
+def append_completed_daily_from_intraday(daily, intraday):
+
+    if not isinstance(daily, list) or not isinstance(intraday, list):
+        return daily
+
+    if not intraday:
+        return daily
+
+    now = datetime.now(IST)
+
+    # Only construct today's daily candle after market close.
+    if (now.hour, now.minute) < (15, 30):
+        return daily
+
+    today = now.date()
+
+    today_candles = []
+
+    for candle in intraday:
+
+        dt = datetime.fromtimestamp(
+            candle["timestamp"],
+            IST
+        )
+
+        if dt.date() == today:
+            today_candles.append(candle)
+
+    if not today_candles:
+        return daily
+
+    # Do not duplicate today's candle if Historical API
+    # already returned it.
+    for candle in daily:
+
+        dt = datetime.fromtimestamp(
+            candle["timestamp"],
+            IST
+        )
+
+        if dt.date() == today:
+            return daily
+
+    today_candles.sort(
+        key=lambda x: x["timestamp"]
+    )
+
+    daily_candle = {
+        "timestamp": today_candles[0]["timestamp"],
+        "open": today_candles[0]["open"],
+        "high": max(c["high"] for c in today_candles),
+        "low": min(c["low"] for c in today_candles),
+        "close": today_candles[-1]["close"],
+        "volume": sum(c["volume"] for c in today_candles)
+    }
+
+    daily.append(daily_candle)
+
+    daily.sort(
+        key=lambda x: x["timestamp"]
+    )
+
+    return daily
+
 
 # ============================================================
 # DAILY -> WEEKLY
@@ -602,6 +666,13 @@ for instrument_name, config in INSTRUMENTS.items():
         lambda: fetch_daily(
             security_id
         )
+    )
+
+    if isinstance(daily, list) and isinstance(candles_5m, list):
+
+    daily = append_completed_daily_from_intraday(
+        daily,
+        candles_5m
     )
 
     # --------------------------------------------------------
