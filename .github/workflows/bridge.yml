@@ -4,6 +4,8 @@ on:
   workflow_dispatch:
 
   schedule:
+    # GitHub cron uses UTC.
+    # Runs every 5 minutes, Monday-Friday, during the broad Indian market window.
     - cron: "*/5 3-10 * * 1-5"
 
 permissions:
@@ -22,16 +24,17 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Run bridge
+      - name: Run PSYCHO Market Bridge
         env:
           DHAN_ACCESS_TOKEN: ${{ secrets.DHAN_ACCESS_TOKEN }}
           DHAN_CLIENT_ID: ${{ secrets.DHAN_CLIENT_ID }}
         run: python bridge.py
 
-      - name: Commit generated data
+      - name: Commit generated market data
         run: |
           git config user.name "psycho-market-bridge"
           git config user.email "actions@github.com"
           git add market-live.json
-          git commit -m "Update market bridge data" || exit 0
+          git diff --cached --quiet && echo "No market-data changes to commit" && exit 0
+          git commit -m "Auto-update PSYCHO market data"
           git push
