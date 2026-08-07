@@ -1,7 +1,7 @@
 {
   "status": "LIVE",
   "source": "DHAN",
-  "generated_at": "2026-08-07T13:05:25.952047+05:30",
+  "generated_at": "2026-08-07T13:05:58.144373+05:30",
   "markets": {
     "NIFTY": {
       "5m": [
@@ -13642,8 +13642,8 @@
           "open": 24559.6,
           "high": 24560.0,
           "low": 24555.9,
-          "close": 24558.85,
-          "volume": 167577.0
+          "close": 24558.3,
+          "volume": 293023.0
         }
       ],
       "15m": [
@@ -18204,8 +18204,8 @@
           "open": 24556.25,
           "high": 24560.0,
           "low": 24548.15,
-          "close": 24558.75,
-          "volume": 2034413.0
+          "close": 24558.3,
+          "volume": 2159859.0
         }
       ],
       "60m": [
@@ -19462,8 +19462,8 @@
           "open": 24543.3,
           "high": 24570.05,
           "low": 24532.9,
-          "close": 24558.9,
-          "volume": 20905854.0
+          "close": 24557.95,
+          "volume": 21033899.0
         }
       ],
       "1D": [
@@ -37918,8 +37918,8 @@
           "open": 57776.55,
           "high": 57782.45,
           "low": 57772.6,
-          "close": 57778.1,
-          "volume": 75539.0
+          "close": 57778.55,
+          "volume": 185600.0
         }
       ],
       "15m": [
@@ -42480,8 +42480,8 @@
           "open": 57776.55,
           "high": 57784.15,
           "low": 57759.9,
-          "close": 57779.45,
-          "volume": 1038441.0
+          "close": 57778.3,
+          "volume": 1148838.0
         }
       ],
       "60m": [
@@ -43738,8 +43738,8 @@
           "open": 57731.0,
           "high": 57813.7,
           "low": 57697.8,
-          "close": 57780.05,
-          "volume": 12620461.0
+          "close": 57774.05,
+          "volume": 12730858.0
         }
       ],
       "1D": [
@@ -48555,9 +48555,9 @@
         }
       ],
       "option_chain": {
-        "generated_at": "2026-08-07T13:05:28.514019+05:30",
+        "generated_at": "2026-08-07T13:06:01.036240+05:30",
         "expiry": "2026-08-25",
-        "underlying_ltp": 57779.35,
+        "underlying_ltp": 57774.05,
         "strikes": {
           "31000.000000": {
             "CE": {
@@ -52964,8 +52964,8 @@
               "iv": 35.619272169329705,
               "bid_price": 3.15,
               "bid_quantity": 90,
-              "ask_price": 3.4,
-              "ask_quantity": 120,
+              "ask_price": 3.6,
+              "ask_quantity": 90,
               "previous_close": 3.45,
               "greeks": {
                 "delta": -0.0024,
@@ -53170,9 +53170,9 @@
               "volume": 690,
               "previous_volume": 90,
               "iv": 0,
-              "bid_price": 10849.35,
+              "bid_price": 10853.55,
               "bid_quantity": 30,
-              "ask_price": 10894.5,
+              "ask_price": 10893.55,
               "ask_quantity": 30,
               "previous_close": 10785.05,
               "greeks": {
@@ -53630,8 +53630,8 @@
               "volume": 2610,
               "previous_volume": 60,
               "iv": 0,
-              "bid_price": 9856.3,
-              "bid_quantity": 150,
+              "bid_price": 9860.55,
+              "bid_quantity": 30,
               "ask_price": 9928.85,
               "ask_quantity": 30,
               "previous_close": 9925.05,
@@ -53908,7 +53908,7 @@
               "iv": 0,
               "bid_price": 8429.3,
               "bid_quantity": 300,
-              "ask_price": 9704.4,
+              "ask_price": 9703.9,
               "ask_quantity": 300,
               "previous_close": 7450.45,
               "greeks": {
@@ -53954,7 +53954,7 @@
               "iv": 0,
               "bid_price": 8337.4,
               "bid_quantity": 300,
-              "ask_price": 9558.75,
+              "ask_price": 9557.45,
               "ask_quantity": 300,
               "previous_close": 7362.25,
               "greeks": {
@@ -54000,7 +54000,7 @@
               "iv": 0,
               "bid_price": 8244.5,
               "bid_quantity": 300,
-              "ask_price": 9455.95,
+              "ask_price": 9455.15,
               "ask_quantity": 300,
               "previous_close": 7274.4,
               "greeks": {
@@ -54046,7 +54046,7 @@
               "iv": 0,
               "bid_price": 8153.1,
               "bid_quantity": 300,
-              "ask_price": 9392.25,
+              "ask_price": 9391.15,
               "ask_quantity": 300,
               "previous_close": 7186.9,
               "greeks": {
@@ -54138,7 +54138,7 @@
               "iv": 0,
               "bid_price": 7969.35,
               "bid_quantity": 300,
-              "ask_price": 9183.1,
+              "ask_price": 9181.9,
               "ask_quantity": 300,
               "previous_close": 7013,
               "greeks": {
@@ -54184,7 +54184,7 @@
               "iv": 0,
               "bid_price": 7876.8,
               "bid_quantity": 300,
-              "ask_price": 9081.55,
+              "ask_price": 9081.05,
               "ask_quantity": 300,
               "previous_close": 6926.65,
               "greeks": {
@@ -54230,7 +54230,7 @@
               "iv": 0,
               "bid_price": 7784.8,
               "bid_quantity": 300,
-              "ask_price": 8982.25,
+              "ask_price": 8981.25,
               "ask_quantity": 300,
               "previous_close": 6840.65,
               "greeks": {
@@ -54276,7 +54276,7 @@
               "iv": 0,
               "bid_price": 7692.4,
               "bid_quantity": 300,
-              "ask_price": 8877.9,
+              "ask_price": 8877.3,
               "ask_quantity": 300,
               "previous_close": 6755.05,
               "greeks": {
@@ -54368,7 +54368,7 @@
               "iv": 0,
               "bid_price": 7508.4,
               "bid_quantity": 300,
-              "ask_price": 8667.4,
+              "ask_price": 8666.7,
               "ask_quantity": 300,
               "previous_close": 6585.05,
               "greeks": {
@@ -54414,7 +54414,7 @@
               "iv": 0,
               "bid_price": 7415.25,
               "bid_quantity": 300,
-              "ask_price": 8565.6,
+              "ask_price": 8564.7,
               "ask_quantity": 300,
               "previous_close": 6500.7,
               "greeks": {
@@ -54460,7 +54460,7 @@
               "iv": 0,
               "bid_price": 7325.05,
               "bid_quantity": 300,
-              "ask_price": 8428.15,
+              "ask_price": 8427.35,
               "ask_quantity": 300,
               "previous_close": 6416.75,
               "greeks": {
@@ -54506,7 +54506,7 @@
               "iv": 0,
               "bid_price": 7233.25,
               "bid_quantity": 300,
-              "ask_price": 8329.3,
+              "ask_price": 8327.9,
               "ask_quantity": 300,
               "previous_close": 6333.25,
               "greeks": {
@@ -54550,9 +54550,9 @@
               "volume": 1080,
               "previous_volume": 5100,
               "iv": 0,
-              "bid_price": 7877.1,
+              "bid_price": 7877.7,
               "bid_quantity": 30,
-              "ask_price": 7921.95,
+              "ask_price": 7916.35,
               "ask_quantity": 30,
               "previous_close": 8116.2,
               "greeks": {
@@ -54575,7 +54575,7 @@
               "bid_price": 7.25,
               "bid_quantity": 30,
               "ask_price": 7.3,
-              "ask_quantity": 990,
+              "ask_quantity": 1230,
               "previous_close": 7.85,
               "greeks": {
                 "delta": -0.00633,
@@ -54598,7 +54598,7 @@
               "iv": 0,
               "bid_price": 7005.6,
               "bid_quantity": 300,
-              "ask_price": 8136.2,
+              "ask_price": 8135.5,
               "ask_quantity": 300,
               "previous_close": 6167.55,
               "greeks": {
@@ -54644,7 +54644,7 @@
               "iv": 0,
               "bid_price": 6913.5,
               "bid_quantity": 300,
-              "ask_price": 8028.45,
+              "ask_price": 8027.85,
               "ask_quantity": 300,
               "previous_close": 6085.35,
               "greeks": {
@@ -54690,7 +54690,7 @@
               "iv": 0,
               "bid_price": 6821.65,
               "bid_quantity": 300,
-              "ask_price": 7936.6,
+              "ask_price": 7935.8,
               "ask_quantity": 300,
               "previous_close": 6003.65,
               "greeks": {
@@ -54736,7 +54736,7 @@
               "iv": 0,
               "bid_price": 6729.55,
               "bid_quantity": 300,
-              "ask_price": 7832.25,
+              "ask_price": 7831.65,
               "ask_quantity": 300,
               "previous_close": 5922.4,
               "greeks": {
@@ -54828,7 +54828,7 @@
               "iv": 0,
               "bid_price": 6545.25,
               "bid_quantity": 300,
-              "ask_price": 7607.9,
+              "ask_price": 7607.3,
               "ask_quantity": 300,
               "previous_close": 5761.4,
               "greeks": {
@@ -54874,7 +54874,7 @@
               "iv": 0,
               "bid_price": 6453.05,
               "bid_quantity": 300,
-              "ask_price": 7522.8,
+              "ask_price": 7521.7,
               "ask_quantity": 300,
               "previous_close": 5681.6,
               "greeks": {
@@ -54920,7 +54920,7 @@
               "iv": 0,
               "bid_price": 6360.8,
               "bid_quantity": 300,
-              "ask_price": 7407.65,
+              "ask_price": 7406.95,
               "ask_quantity": 300,
               "previous_close": 5602.3,
               "greeks": {
@@ -54966,7 +54966,7 @@
               "iv": 0,
               "bid_price": 6268.6,
               "bid_quantity": 300,
-              "ask_price": 7310.35,
+              "ask_price": 7309.05,
               "ask_quantity": 300,
               "previous_close": 5523.5,
               "greeks": {
@@ -55012,7 +55012,7 @@
               "iv": 0,
               "bid_price": 6863.1,
               "bid_quantity": 30,
-              "ask_price": 6925.05,
+              "ask_price": 6922.5,
               "ask_quantity": 30,
               "previous_close": 7137,
               "greeks": {
@@ -55032,10 +55032,10 @@
               "volume": 38190,
               "previous_volume": 146640,
               "iv": 24.35396461393692,
-              "bid_price": 8.45,
-              "bid_quantity": 30,
-              "ask_price": 8.75,
-              "ask_quantity": 60,
+              "bid_price": 8.4,
+              "bid_quantity": 210,
+              "ask_price": 8.7,
+              "ask_quantity": 90,
               "previous_close": 8.8,
               "greeks": {
                 "delta": -0.00805,
@@ -55056,7 +55056,7 @@
               "volume": 0,
               "previous_volume": 30,
               "iv": 0,
-              "bid_price": 6640.15,
+              "bid_price": 6645.65,
               "bid_quantity": 300,
               "ask_price": 6873.9,
               "ask_quantity": 30,
@@ -55104,7 +55104,7 @@
               "iv": 0,
               "bid_price": 5995.95,
               "bid_quantity": 300,
-              "ask_price": 6984.85,
+              "ask_price": 6984.15,
               "ask_quantity": 300,
               "previous_close": 5290.25,
               "greeks": {
@@ -55150,7 +55150,7 @@
               "iv": 0,
               "bid_price": 5902.2,
               "bid_quantity": 300,
-              "ask_price": 6881.9,
+              "ask_price": 6880.5,
               "ask_quantity": 300,
               "previous_close": 5213.6,
               "greeks": {
@@ -55196,7 +55196,7 @@
               "iv": 0,
               "bid_price": 5809.55,
               "bid_quantity": 300,
-              "ask_price": 6804.6,
+              "ask_price": 6803.9,
               "ask_quantity": 300,
               "previous_close": 5137.4,
               "greeks": {
@@ -55262,9 +55262,9 @@
               "volume": 14430,
               "previous_volume": 66990,
               "iv": 23.22046008262324,
-              "bid_price": 9.75,
+              "bid_price": 9.55,
               "bid_quantity": 30,
-              "ask_price": 10.1,
+              "ask_price": 9.95,
               "ask_quantity": 30,
               "previous_close": 10.5,
               "greeks": {
@@ -55288,7 +55288,7 @@
               "iv": 0,
               "bid_price": 5669.5,
               "bid_quantity": 300,
-              "ask_price": 6579.1,
+              "ask_price": 6578.7,
               "ask_quantity": 300,
               "previous_close": 4986.75,
               "greeks": {
@@ -55334,7 +55334,7 @@
               "iv": 0,
               "bid_price": 5627.25,
               "bid_quantity": 300,
-              "ask_price": 6458.3,
+              "ask_price": 6457.8,
               "ask_quantity": 300,
               "previous_close": 4912.25,
               "greeks": {
@@ -55380,7 +55380,7 @@
               "iv": 0,
               "bid_price": 5549.8,
               "bid_quantity": 300,
-              "ask_price": 6355.7,
+              "ask_price": 6355.2,
               "ask_quantity": 300,
               "previous_close": 4838.3,
               "greeks": {
@@ -55470,9 +55470,9 @@
               "volume": 60,
               "previous_volume": 90,
               "iv": 0,
-              "bid_price": 5885,
+              "bid_price": 5886.35,
               "bid_quantity": 30,
-              "ask_price": 5926.1,
+              "ask_price": 5923.15,
               "ask_quantity": 30,
               "previous_close": 6099.95,
               "greeks": {
@@ -55516,9 +55516,9 @@
               "volume": 0,
               "previous_volume": 0,
               "iv": 0,
-              "bid_price": 5427.3,
+              "bid_price": 5428.4,
               "bid_quantity": 300,
-              "ask_price": 6680.7,
+              "ask_price": 6677.6,
               "ask_quantity": 300,
               "previous_close": 4621.65,
               "greeks": {
@@ -55610,7 +55610,7 @@
               "iv": 0,
               "bid_price": 5498.95,
               "bid_quantity": 300,
-              "ask_price": 6444.3,
+              "ask_price": 6441.2,
               "ask_quantity": 300,
               "previous_close": 4478.75,
               "greeks": {
@@ -55654,9 +55654,9 @@
               "volume": 0,
               "previous_volume": 0,
               "iv": 0,
-              "bid_price": 5319,
+              "bid_price": 5320.2,
               "bid_quantity": 300,
-              "ask_price": 6346.3,
+              "ask_price": 6342.9,
               "ask_quantity": 300,
               "previous_close": 4408.2,
               "greeks": {
@@ -55700,8 +55700,8 @@
               "volume": 0,
               "previous_volume": 210,
               "iv": 0,
-              "bid_price": 5282.75,
-              "bid_quantity": 330,
+              "bid_price": 5286.05,
+              "bid_quantity": 300,
               "ask_price": 5458.85,
               "ask_quantity": 30,
               "previous_close": 4850,
@@ -55723,7 +55723,7 @@
               "previous_volume": 171090,
               "iv": 20.6302057931415,
               "bid_price": 13,
-              "bid_quantity": 150,
+              "bid_quantity": 180,
               "ask_price": 13.15,
               "ask_quantity": 30,
               "previous_close": 14.15,
@@ -55792,9 +55792,9 @@
               "volume": 0,
               "previous_volume": 0,
               "iv": 0,
-              "bid_price": 5018.1,
+              "bid_price": 5019.2,
               "bid_quantity": 300,
-              "ask_price": 5992.85,
+              "ask_price": 5989.25,
               "ask_quantity": 300,
               "previous_close": 4198.35,
               "greeks": {
@@ -55838,9 +55838,9 @@
               "volume": 0,
               "previous_volume": 0,
               "iv": 0,
-              "bid_price": 4853.55,
+              "bid_price": 4854.75,
               "bid_quantity": 300,
-              "ask_price": 5901.35,
+              "ask_price": 5897.55,
               "ask_quantity": 300,
               "previous_close": 4130.4,
               "greeks": {
@@ -55884,9 +55884,9 @@
               "volume": 0,
               "previous_volume": 0,
               "iv": 0,
-              "bid_price": 4803.75,
+              "bid_price": 4804.95,
               "bid_quantity": 300,
-              "ask_price": 5720.55,
+              "ask_price": 5716.95,
               "ask_quantity": 300,
               "previous_close": 4063.05,
               "greeks": {
@@ -55900,16 +55900,16 @@
               "security_id": 58940,
               "ltp": 16.05,
               "average_price": 16.14,
-              "oi": 11640,
+              "oi": 11940,
               "previous_oi": 11610,
-              "oi_change": 30,
+              "oi_change": 330,
               "volume": 2220,
               "previous_volume": 13440,
               "iv": 19.84229687653879,
               "bid_price": 14.65,
               "bid_quantity": 390,
-              "ask_price": 15.85,
-              "ask_quantity": 330,
+              "ask_price": 15.7,
+              "ask_quantity": 30,
               "previous_close": 16.75,
               "greeks": {
                 "delta": -0.01709,
@@ -55930,9 +55930,9 @@
               "volume": 270,
               "previous_volume": 780,
               "iv": 0,
-              "bid_price": 4905.1,
+              "bid_price": 4904.05,
               "bid_quantity": 30,
-              "ask_price": 4935.1,
+              "ask_price": 4933.35,
               "ask_quantity": 30,
               "previous_close": 5162.8,
               "greeks": {
@@ -55944,24 +55944,24 @@
             },
             "PE": {
               "security_id": 58942,
-              "ltp": 16.15,
+              "ltp": 16.1,
               "average_price": 17.23,
               "oi": 362370,
               "previous_oi": 373590,
               "oi_change": -11220,
-              "volume": 112320,
+              "volume": 112410,
               "previous_volume": 281580,
-              "iv": 19.518661711430298,
-              "bid_price": 16.05,
-              "bid_quantity": 30,
+              "iv": 19.504696117149578,
+              "bid_price": 16.1,
+              "bid_quantity": 120,
               "ask_price": 16.15,
-              "ask_quantity": 60,
+              "ask_quantity": 30,
               "previous_close": 17.35,
               "greeks": {
-                "delta": -0.01744,
-                "theta": -2.68978,
+                "delta": -0.01741,
+                "theta": -2.68292,
                 "gamma": 2e-05,
-                "vega": 5.5808
+                "vega": 5.57068
               }
             }
           },
@@ -56022,7 +56022,7 @@
               "volume": 0,
               "previous_volume": 30,
               "iv": 0,
-              "bid_price": 4658.7,
+              "bid_price": 4659.8,
               "bid_quantity": 30,
               "ask_price": 4786.3,
               "ask_quantity": 30,
@@ -56046,7 +56046,7 @@
               "iv": 19.246263696527183,
               "bid_price": 17.65,
               "bid_quantity": 30,
-              "ask_price": 18.6,
+              "ask_price": 18.2,
               "ask_quantity": 30,
               "previous_close": 19.8,
               "greeks": {
@@ -56160,7 +56160,7 @@
               "volume": 0,
               "previous_volume": 1050,
               "iv": 0,
-              "bid_price": 4337.95,
+              "bid_price": 4341.45,
               "bid_quantity": 300,
               "ask_price": 4455.9,
               "ask_quantity": 30,
@@ -56174,24 +56174,24 @@
             },
             "PE": {
               "security_id": 58961,
-              "ltp": 20.45,
-              "average_price": 22.02,
-              "oi": 120750,
+              "ltp": 20.3,
+              "average_price": 22.01,
+              "oi": 120720,
               "previous_oi": 118080,
-              "oi_change": 2670,
-              "volume": 117750,
+              "oi_change": 2640,
+              "volume": 117780,
               "previous_volume": 124350,
-              "iv": 18.427503887901345,
+              "iv": 18.42597522976824,
               "bid_price": 20.25,
               "bid_quantity": 30,
-              "ask_price": 20.35,
-              "ask_quantity": 60,
+              "ask_price": 20.4,
+              "ask_quantity": 120,
               "previous_close": 21.4,
               "greeks": {
-                "delta": -0.02265,
-                "theta": -3.13604,
+                "delta": -0.02251,
+                "theta": -3.11948,
                 "gamma": 2e-05,
-                "vega": 6.96634
+                "vega": 6.92873
               }
             }
           },
@@ -56206,8 +56206,8 @@
               "volume": 0,
               "previous_volume": 60,
               "iv": 0,
-              "bid_price": 4205.15,
-              "bid_quantity": 330,
+              "bid_price": 4209.25,
+              "bid_quantity": 300,
               "ask_price": 4417.6,
               "ask_quantity": 330,
               "previous_close": 4284.45,
@@ -56298,8 +56298,8 @@
               "volume": 0,
               "previous_volume": 30,
               "iv": 0,
-              "bid_price": 4074.65,
-              "bid_quantity": 300,
+              "bid_price": 4075.5,
+              "bid_quantity": 30,
               "ask_price": 4219.6,
               "ask_quantity": 330,
               "previous_close": 4091.7,
@@ -56344,9 +56344,9 @@
               "volume": 0,
               "previous_volume": 120,
               "iv": 46.3866427080307,
-              "bid_price": 3896.05,
+              "bid_price": 3901.35,
               "bid_quantity": 300,
-              "ask_price": 4160.25,
+              "ask_price": 4159.15,
               "ask_quantity": 300,
               "previous_close": 3976.25,
               "greeks": {
@@ -56390,9 +56390,9 @@
               "volume": 10410,
               "previous_volume": 16140,
               "iv": 0,
-              "bid_price": 3921.85,
-              "bid_quantity": 60,
-              "ask_price": 3946.35,
+              "bid_price": 3920.55,
+              "bid_quantity": 30,
+              "ask_price": 3953.45,
               "ask_quantity": 30,
               "previous_close": 4139.55,
               "greeks": {
@@ -56412,10 +56412,10 @@
               "volume": 215100,
               "previous_volume": 327030,
               "iv": 17.413764612527423,
-              "bid_price": 26.3,
-              "bid_quantity": 30,
-              "ask_price": 26.5,
-              "ask_quantity": 150,
+              "bid_price": 26.45,
+              "bid_quantity": 150,
+              "ask_price": 26.55,
+              "ask_quantity": 30,
               "previous_close": 27.3,
               "greeks": {
                 "delta": -0.02994,
@@ -56438,8 +56438,8 @@
               "iv": 0,
               "bid_price": 3370.55,
               "bid_quantity": 300,
-              "ask_price": 3957.05,
-              "ask_quantity": 30,
+              "ask_price": 4026.5,
+              "ask_quantity": 570,
               "previous_close": 3304.8,
               "greeks": {
                 "delta": 0,
@@ -56504,10 +56504,10 @@
               "volume": 7590,
               "previous_volume": 15630,
               "iv": 16.993319928634858,
-              "bid_price": 29.35,
-              "bid_quantity": 30,
-              "ask_price": 29.6,
-              "ask_quantity": 30,
+              "bid_price": 29.4,
+              "bid_quantity": 120,
+              "ask_price": 29.9,
+              "ask_quantity": 420,
               "previous_close": 29.85,
               "greeks": {
                 "delta": -0.0336,
@@ -56528,7 +56528,7 @@
               "volume": 30,
               "previous_volume": 30,
               "iv": 0,
-              "bid_price": 3572.95,
+              "bid_price": 3576.45,
               "bid_quantity": 300,
               "ask_price": 3681.45,
               "ask_quantity": 30,
@@ -56542,24 +56542,24 @@
             },
             "PE": {
               "security_id": 58987,
-              "ltp": 30.65,
-              "average_price": 34.38,
-              "oi": 16260,
+              "ltp": 31.6,
+              "average_price": 34.36,
+              "oi": 16200,
               "previous_oi": 15780,
-              "oi_change": 480,
-              "volume": 5640,
+              "oi_change": 420,
+              "volume": 5670,
               "previous_volume": 22590,
-              "iv": 16.83814127317415,
-              "bid_price": 31.2,
-              "bid_quantity": 210,
-              "ask_price": 31.55,
-              "ask_quantity": 30,
+              "iv": 16.811216472571605,
+              "bid_price": 31.4,
+              "bid_quantity": 30,
+              "ask_price": 31.75,
+              "ask_quantity": 150,
               "previous_close": 31.8,
               "greeks": {
-                "delta": -0.035,
-                "theta": -4.03335,
+                "delta": -0.03603,
+                "theta": -4.11809,
                 "gamma": 4e-05,
-                "vega": 10.01602
+                "vega": 10.24627
               }
             }
           },
@@ -56574,7 +56574,7 @@
               "volume": 180,
               "previous_volume": 120,
               "iv": 0,
-              "bid_price": 3442.95,
+              "bid_price": 3445.05,
               "bid_quantity": 300,
               "ask_price": 3583.5,
               "ask_quantity": 30,
@@ -56596,10 +56596,10 @@
               "volume": 13110,
               "previous_volume": 35040,
               "iv": 16.64427567700114,
-              "bid_price": 33.4,
-              "bid_quantity": 300,
-              "ask_price": 33.85,
-              "ask_quantity": 120,
+              "bid_price": 33.6,
+              "bid_quantity": 30,
+              "ask_price": 33.9,
+              "ask_quantity": 30,
               "previous_close": 34.85,
               "greeks": {
                 "delta": -0.03888,
@@ -56622,7 +56622,7 @@
               "iv": 0,
               "bid_price": 3397.35,
               "bid_quantity": 30,
-              "ask_price": 3462.55,
+              "ask_price": 3458.95,
               "ask_quantity": 30,
               "previous_close": 3582,
               "greeks": {
@@ -56634,24 +56634,24 @@
             },
             "PE": {
               "security_id": 58993,
-              "ltp": 36,
-              "average_price": 38.62,
+              "ltp": 36.15,
+              "average_price": 38.61,
               "oi": 217080,
               "previous_oi": 201360,
               "oi_change": 15720,
-              "volume": 141870,
+              "volume": 141990,
               "previous_volume": 417060,
-              "iv": 16.451611328495634,
-              "bid_price": 35.9,
-              "bid_quantity": 30,
-              "ask_price": 36,
-              "ask_quantity": 30,
+              "iv": 16.470490717293625,
+              "bid_price": 35.95,
+              "bid_quantity": 180,
+              "ask_price": 36.15,
+              "ask_quantity": 240,
               "previous_close": 36.35,
               "greeks": {
-                "delta": -0.04113,
-                "theta": -4.45941,
+                "delta": -0.04123,
+                "theta": -4.47449,
                 "gamma": 4e-05,
-                "vega": 11.41391
+                "vega": 11.43803
               }
             }
           },
@@ -56688,10 +56688,10 @@
               "volume": 7470,
               "previous_volume": 20940,
               "iv": 16.321596812542246,
-              "bid_price": 38.9,
+              "bid_price": 38.95,
               "bid_quantity": 30,
-              "ask_price": 39.35,
-              "ask_quantity": 30,
+              "ask_price": 39.3,
+              "ask_quantity": 210,
               "previous_close": 39.3,
               "greeks": {
                 "delta": -0.04438,
@@ -56714,8 +56714,8 @@
               "iv": 0,
               "bid_price": 2936.95,
               "bid_quantity": 300,
-              "ask_price": 3387.95,
-              "ask_quantity": 60,
+              "ask_price": 3344.9,
+              "ask_quantity": 30,
               "previous_close": 2961.05,
               "greeks": {
                 "delta": 0,
@@ -56726,24 +56726,24 @@
             },
             "PE": {
               "security_id": 58999,
-              "ltp": 42.65,
-              "average_price": 44.94,
+              "ltp": 41.95,
+              "average_price": 44.93,
               "oi": 24030,
               "previous_oi": 26190,
               "oi_change": -2160,
-              "volume": 24840,
+              "volume": 24930,
               "previous_volume": 85050,
-              "iv": 16.188803476335842,
-              "bid_price": 41.8,
-              "bid_quantity": 90,
-              "ask_price": 42.15,
+              "iv": 16.16290361139679,
+              "bid_price": 41.85,
+              "bid_quantity": 30,
+              "ask_price": 42.05,
               "ask_quantity": 30,
               "previous_close": 41.4,
               "greeks": {
-                "delta": -0.0483,
-                "theta": -4.95824,
+                "delta": -0.04768,
+                "theta": -4.90074,
                 "gamma": 5e-05,
-                "vega": 12.99063
+                "vega": 12.85799
               }
             }
           },
@@ -56760,7 +56760,7 @@
               "iv": 0,
               "bid_price": 2761.85,
               "bid_quantity": 300,
-              "ask_price": 3238.4,
+              "ask_price": 3238.35,
               "ask_quantity": 30,
               "previous_close": 3120.1,
               "greeks": {
@@ -56780,10 +56780,10 @@
               "volume": 33030,
               "previous_volume": 61410,
               "iv": 16.082986945872587,
-              "bid_price": 45.4,
+              "bid_price": 45.45,
               "bid_quantity": 30,
-              "ask_price": 45.75,
-              "ask_quantity": 330,
+              "ask_price": 45.85,
+              "ask_quantity": 30,
               "previous_close": 44.3,
               "greeks": {
                 "delta": -0.05262,
@@ -56804,7 +56804,7 @@
               "volume": 0,
               "previous_volume": 0,
               "iv": 0,
-              "bid_price": 2905.4,
+              "bid_price": 2937.25,
               "bid_quantity": 300,
               "ask_price": 3149.45,
               "ask_quantity": 30,
@@ -56826,10 +56826,10 @@
               "volume": 16410,
               "previous_volume": 20340,
               "iv": 15.903078296781606,
-              "bid_price": 48.85,
-              "bid_quantity": 120,
-              "ask_price": 49.3,
-              "ask_quantity": 30,
+              "bid_price": 48.95,
+              "bid_quantity": 330,
+              "ask_price": 49.55,
+              "ask_quantity": 120,
               "previous_close": 47.3,
               "greeks": {
                 "delta": -0.05604,
@@ -56850,9 +56850,9 @@
               "volume": 3780,
               "previous_volume": 6210,
               "iv": 0,
-              "bid_price": 2959.8,
+              "bid_price": 2958.35,
               "bid_quantity": 30,
-              "ask_price": 2980.3,
+              "ask_price": 2978.75,
               "ask_quantity": 30,
               "previous_close": 3202.15,
               "greeks": {
@@ -56864,24 +56864,24 @@
             },
             "PE": {
               "security_id": 59005,
-              "ltp": 54,
-              "average_price": 56.83,
+              "ltp": 53.4,
+              "average_price": 56.82,
               "oi": 480810,
               "previous_oi": 469170,
               "oi_change": 11640,
-              "volume": 288630,
+              "volume": 289080,
               "previous_volume": 486840,
-              "iv": 15.764990414283538,
-              "bid_price": 53.35,
-              "bid_quantity": 30,
-              "ask_price": 53.6,
-              "ask_quantity": 150,
+              "iv": 15.76214874183441,
+              "bid_price": 53.25,
+              "bid_quantity": 150,
+              "ask_price": 53.5,
+              "ask_quantity": 30,
               "previous_close": 51.7,
               "greeks": {
-                "delta": -0.06051,
-                "theta": -5.70233,
+                "delta": -0.05994,
+                "theta": -5.66184,
                 "gamma": 6e-05,
-                "vega": 15.52755
+                "vega": 15.41473
               }
             }
           },
@@ -56918,10 +56918,10 @@
               "volume": 42090,
               "previous_volume": 42510,
               "iv": 15.600672706748897,
-              "bid_price": 57.1,
+              "bid_price": 57.2,
               "bid_quantity": 30,
-              "ask_price": 57.7,
-              "ask_quantity": 300,
+              "ask_price": 57.75,
+              "ask_quantity": 120,
               "previous_close": 53.9,
               "greeks": {
                 "delta": -0.0645,
@@ -56956,24 +56956,24 @@
             },
             "PE": {
               "security_id": 59009,
-              "ltp": 63,
-              "average_price": 66.96,
+              "ltp": 62.9,
+              "average_price": 66.95,
               "oi": 41490,
               "previous_oi": 39480,
               "oi_change": 2010,
-              "volume": 17460,
+              "volume": 17490,
               "previous_volume": 37620,
-              "iv": 15.476858522369206,
-              "bid_price": 62.4,
+              "iv": 15.488423695751862,
+              "bid_price": 62.5,
               "bid_quantity": 120,
-              "ask_price": 62.7,
-              "ask_quantity": 60,
+              "ask_price": 62.85,
+              "ask_quantity": 30,
               "previous_close": 60.65,
               "greeks": {
-                "delta": -0.07009,
-                "theta": -6.21774,
+                "delta": -0.06994,
+                "theta": -6.21458,
                 "gamma": 7e-05,
-                "vega": 17.403
+                "vega": 17.37677
               }
             }
           },
@@ -56988,9 +56988,9 @@
               "volume": 0,
               "previous_volume": 150,
               "iv": 0,
-              "bid_price": 2674.45,
+              "bid_price": 2675.25,
               "bid_quantity": 30,
-              "ask_price": 2692.75,
+              "ask_price": 2690.9,
               "ask_quantity": 30,
               "previous_close": 2600,
               "greeks": {
@@ -57013,7 +57013,7 @@
               "bid_price": 68.1,
               "bid_quantity": 30,
               "ask_price": 69.25,
-              "ask_quantity": 1050,
+              "ask_quantity": 630,
               "previous_close": 62.7,
               "greeks": {
                 "delta": -0.07646,
@@ -57056,10 +57056,10 @@
               "volume": 15600,
               "previous_volume": 32040,
               "iv": 15.282019847554466,
-              "bid_price": 74.65,
-              "bid_quantity": 90,
-              "ask_price": 75.55,
-              "ask_quantity": 120,
+              "bid_price": 74.45,
+              "bid_quantity": 150,
+              "ask_price": 75.6,
+              "ask_quantity": 630,
               "previous_close": 70.4,
               "greeks": {
                 "delta": -0.08253,
@@ -57080,9 +57080,9 @@
               "volume": 570,
               "previous_volume": 2040,
               "iv": 0,
-              "bid_price": 2492.1,
+              "bid_price": 2489.75,
               "bid_quantity": 30,
-              "ask_price": 2505.05,
+              "ask_price": 2503.25,
               "ask_quantity": 30,
               "previous_close": 2729.85,
               "greeks": {
@@ -57094,24 +57094,24 @@
             },
             "PE": {
               "security_id": 59015,
-              "ltp": 81.75,
+              "ltp": 81.65,
               "average_price": 85.42,
               "oi": 249900,
               "previous_oi": 222750,
               "oi_change": 27150,
-              "volume": 157200,
+              "volume": 157260,
               "previous_volume": 392760,
-              "iv": 15.145960716725785,
-              "bid_price": 81,
+              "iv": 15.15452394740286,
+              "bid_price": 81.1,
               "bid_quantity": 30,
-              "ask_price": 81.3,
-              "ask_quantity": 60,
+              "ask_price": 81.5,
+              "ask_quantity": 30,
               "previous_close": 75.6,
               "greeks": {
-                "delta": -0.08889,
-                "theta": -7.17517,
+                "delta": -0.08875,
+                "theta": -7.17286,
                 "gamma": 8e-05,
-                "vega": 20.83444
+                "vega": 20.81149
               }
             }
           },
@@ -57126,9 +57126,9 @@
               "volume": 0,
               "previous_volume": 150,
               "iv": 0,
-              "bid_price": 2393.4,
+              "bid_price": 2397.85,
               "bid_quantity": 30,
-              "ask_price": 2414.25,
+              "ask_price": 2413.6,
               "ask_quantity": 30,
               "previous_close": 2620.6,
               "greeks": {
@@ -57148,10 +57148,10 @@
               "volume": 27930,
               "previous_volume": 101970,
               "iv": 15.089657874922743,
-              "bid_price": 88.7,
-              "bid_quantity": 60,
-              "ask_price": 89.65,
-              "ask_quantity": 120,
+              "bid_price": 88.75,
+              "bid_quantity": 30,
+              "ask_price": 89.7,
+              "ask_quantity": 30,
               "previous_close": 82.25,
               "greeks": {
                 "delta": -0.09732,
@@ -57172,9 +57172,9 @@
               "volume": 0,
               "previous_volume": 30,
               "iv": 0,
-              "bid_price": 2305.5,
+              "bid_price": 2306.3,
               "bid_quantity": 30,
-              "ask_price": 2323.45,
+              "ask_price": 2321.05,
               "ask_quantity": 30,
               "previous_close": 2368.45,
               "greeks": {
@@ -57186,24 +57186,24 @@
             },
             "PE": {
               "security_id": 59024,
-              "ltp": 98,
-              "average_price": 101.23,
-              "oi": 31500,
+              "ltp": 97.15,
+              "average_price": 101.22,
+              "oi": 31470,
               "previous_oi": 29610,
-              "oi_change": 1890,
-              "volume": 61830,
+              "oi_change": 1860,
+              "volume": 61860,
               "previous_volume": 95550,
-              "iv": 14.944137432977072,
-              "bid_price": 96.75,
+              "iv": 14.924088494433379,
+              "bid_price": 96.9,
               "bid_quantity": 30,
-              "ask_price": 97.15,
+              "ask_price": 97.4,
               "ask_quantity": 30,
               "previous_close": 89.85,
               "greeks": {
-                "delta": -0.10452,
-                "theta": -7.88158,
+                "delta": -0.10389,
+                "theta": -7.83751,
                 "gamma": 9e-05,
-                "vega": 23.46746
+                "vega": 23.36471
               }
             }
           },
@@ -57218,9 +57218,9 @@
               "volume": 0,
               "previous_volume": 30,
               "iv": 0,
-              "bid_price": 2212.15,
+              "bid_price": 2217.05,
               "bid_quantity": 30,
-              "ask_price": 2238.35,
+              "ask_price": 2231.7,
               "ask_quantity": 30,
               "previous_close": 2462.1,
               "greeks": {
@@ -57232,24 +57232,24 @@
             },
             "PE": {
               "security_id": 59029,
-              "ltp": 108.45,
-              "average_price": 110.92,
+              "ltp": 105.9,
+              "average_price": 110.91,
               "oi": 46020,
               "previous_oi": 44640,
               "oi_change": 1380,
-              "volume": 35190,
+              "volume": 35220,
               "previous_volume": 75180,
-              "iv": 14.895786005741884,
-              "bid_price": 105.7,
-              "bid_quantity": 60,
-              "ask_price": 106.75,
-              "ask_quantity": 60,
+              "iv": 14.820007128625278,
+              "bid_price": 105.9,
+              "bid_quantity": 30,
+              "ask_price": 106.65,
+              "ask_quantity": 90,
               "previous_close": 96.3,
               "greeks": {
-                "delta": -0.11393,
-                "theta": -8.30757,
+                "delta": -0.1122,
+                "theta": -8.17543,
                 "gamma": 0.0001,
-                "vega": 24.96752
+                "vega": 24.69686
               }
             }
           },
@@ -57278,24 +57278,24 @@
             },
             "PE": {
               "security_id": 59037,
-              "ltp": 116.7,
-              "average_price": 120.19,
+              "ltp": 116.9,
+              "average_price": 120.18,
               "oi": 28590,
               "previous_oi": 28710,
               "oi_change": -120,
-              "volume": 42930,
+              "volume": 43080,
               "previous_volume": 54720,
-              "iv": 14.75479211078242,
-              "bid_price": 115.6,
+              "iv": 14.762572510971525,
+              "bid_price": 115.85,
               "bid_quantity": 60,
-              "ask_price": 116.3,
-              "ask_quantity": 150,
+              "ask_price": 116.6,
+              "ask_quantity": 30,
               "previous_close": 102.2,
               "greeks": {
-                "delta": -0.12195,
-                "theta": -8.57826,
+                "delta": -0.12206,
+                "theta": -8.58922,
                 "gamma": 0.00011,
-                "vega": 26.19851
+                "vega": 26.21609
               }
             }
           },
@@ -57310,9 +57310,9 @@
               "volume": 20460,
               "previous_volume": 41100,
               "iv": 0,
-              "bid_price": 2040.15,
+              "bid_price": 2039.05,
               "bid_quantity": 60,
-              "ask_price": 2055.35,
+              "ask_price": 2055.15,
               "ask_quantity": 30,
               "previous_close": 2265.45,
               "greeks": {
@@ -57324,24 +57324,24 @@
             },
             "PE": {
               "security_id": 59041,
-              "ltp": 126.9,
+              "ltp": 127.35,
               "average_price": 130.72,
               "oi": 652050,
               "previous_oi": 664830,
               "oi_change": -12780,
-              "volume": 512910,
+              "volume": 513120,
               "previous_volume": 807390,
-              "iv": 14.671730779129815,
-              "bid_price": 126.8,
-              "bid_quantity": 120,
-              "ask_price": 127.15,
-              "ask_quantity": 120,
+              "iv": 14.662700730166458,
+              "bid_price": 126.95,
+              "bid_quantity": 60,
+              "ask_price": 127.2,
+              "ask_quantity": 30,
               "previous_close": 113.8,
               "greeks": {
-                "delta": -0.13116,
-                "theta": -8.91712,
+                "delta": -0.13162,
+                "theta": -8.92871,
                 "gamma": 0.00011,
-                "vega": 27.56595
+                "vega": 27.62917
               }
             }
           },
@@ -57356,9 +57356,9 @@
               "volume": 150,
               "previous_volume": 2130,
               "iv": 0,
-              "bid_price": 1952.35,
+              "bid_price": 1950.25,
               "bid_quantity": 30,
-              "ask_price": 1965.15,
+              "ask_price": 1966.9,
               "ask_quantity": 30,
               "previous_close": 2148.95,
               "greeks": {
@@ -57370,24 +57370,24 @@
             },
             "PE": {
               "security_id": 59043,
-              "ltp": 138.6,
+              "ltp": 138.2,
               "average_price": 142.93,
-              "oi": 51360,
+              "oi": 51300,
               "previous_oi": 55590,
-              "oi_change": -4230,
-              "volume": 41910,
+              "oi_change": -4290,
+              "volume": 41940,
               "previous_volume": 96360,
-              "iv": 14.547497546735658,
-              "bid_price": 137.9,
-              "bid_quantity": 330,
-              "ask_price": 138.7,
+              "iv": 14.54408481010961,
+              "bid_price": 138.35,
+              "bid_quantity": 120,
+              "ask_price": 139.05,
               "ask_quantity": 60,
               "previous_close": 122.4,
               "greeks": {
-                "delta": -0.14188,
-                "theta": -9.25314,
+                "delta": -0.14157,
+                "theta": -9.23895,
                 "gamma": 0.00012,
-                "vega": 29.08363
+                "vega": 29.04184
               }
             }
           },
@@ -57402,9 +57402,9 @@
               "volume": 150,
               "previous_volume": 210,
               "iv": 9.557900093390359,
-              "bid_price": 1865.85,
+              "bid_price": 1864.4,
               "bid_quantity": 30,
-              "ask_price": 1877.25,
+              "ask_price": 1876,
               "ask_quantity": 30,
               "previous_close": 2070,
               "greeks": {
@@ -57424,10 +57424,10 @@
               "volume": 34770,
               "previous_volume": 81240,
               "iv": 14.461374999867463,
-              "bid_price": 150.85,
-              "bid_quantity": 120,
-              "ask_price": 151.95,
-              "ask_quantity": 30,
+              "bid_price": 151.1,
+              "bid_quantity": 210,
+              "ask_price": 152.55,
+              "ask_quantity": 90,
               "previous_close": 130.85,
               "greeks": {
                 "delta": -0.15311,
@@ -57448,9 +57448,9 @@
               "volume": 90,
               "previous_volume": 1110,
               "iv": 10.390122075852592,
-              "bid_price": 1781.15,
+              "bid_price": 1779.2,
               "bid_quantity": 30,
-              "ask_price": 1800.65,
+              "ask_price": 1795.25,
               "ask_quantity": 30,
               "previous_close": 1997.85,
               "greeks": {
@@ -57462,24 +57462,24 @@
             },
             "PE": {
               "security_id": 59048,
-              "ltp": 165.9,
-              "average_price": 170.1,
-              "oi": 59280,
+              "ltp": 165.65,
+              "average_price": 170.03,
+              "oi": 59250,
               "previous_oi": 46410,
-              "oi_change": 12870,
-              "volume": 65370,
+              "oi_change": 12840,
+              "volume": 66450,
               "previous_volume": 94920,
-              "iv": 14.401002591481884,
-              "bid_price": 165.1,
-              "bid_quantity": 120,
-              "ask_price": 165.7,
-              "ask_quantity": 90,
+              "iv": 14.384103526169456,
+              "bid_price": 165.5,
+              "bid_quantity": 60,
+              "ask_price": 166.25,
+              "ask_quantity": 210,
               "previous_close": 144.55,
               "greeks": {
-                "delta": -0.16522,
-                "theta": -9.97325,
+                "delta": -0.16519,
+                "theta": -9.9571,
                 "gamma": 0.00013,
-                "vega": 32.1735
+                "vega": 32.16762
               }
             }
           },
@@ -57494,9 +57494,9 @@
               "volume": 90,
               "previous_volume": 1560,
               "iv": 8.564337412445656,
-              "bid_price": 1691.9,
+              "bid_price": 1695,
               "bid_quantity": 30,
-              "ask_price": 1710.7,
+              "ask_price": 1705.95,
               "ask_quantity": 30,
               "previous_close": 1901.5,
               "greeks": {
@@ -57516,10 +57516,10 @@
               "volume": 62070,
               "previous_volume": 67680,
               "iv": 14.314671937420265,
-              "bid_price": 180.9,
+              "bid_price": 181.25,
               "bid_quantity": 120,
-              "ask_price": 181.5,
-              "ask_quantity": 90,
+              "ask_price": 181.8,
+              "ask_quantity": 60,
               "previous_close": 157.6,
               "greeks": {
                 "delta": -0.17782,
@@ -57532,24 +57532,24 @@
           "56500.000000": {
             "CE": {
               "security_id": 59055,
-              "ltp": 1618.05,
-              "average_price": 1655.46,
+              "ltp": 1618,
+              "average_price": 1654.97,
               "oi": 158460,
               "previous_oi": 158250,
               "oi_change": 210,
-              "volume": 11430,
+              "volume": 11580,
               "previous_volume": 50250,
-              "iv": 9.544935962640277,
-              "bid_price": 1618.05,
+              "iv": 9.675350612897534,
+              "bid_price": 1613.25,
               "bid_quantity": 30,
-              "ask_price": 1623.7,
+              "ask_price": 1622.3,
               "ask_quantity": 30,
               "previous_close": 1819.75,
               "greeks": {
-                "delta": 0.90151,
-                "theta": -19.67672,
+                "delta": 0.89803,
+                "theta": -19.85251,
                 "gamma": 0.00014,
-                "vega": 22.47587
+                "vega": 23.05052
               }
             },
             "PE": {
@@ -57562,10 +57562,10 @@
               "volume": 286920,
               "previous_volume": 452550,
               "iv": 14.275562432767932,
-              "bid_price": 198,
+              "bid_price": 197.9,
               "bid_quantity": 90,
-              "ask_price": 198.45,
-              "ask_quantity": 30,
+              "ask_price": 198.75,
+              "ask_quantity": 150,
               "previous_close": 170.2,
               "greeks": {
                 "delta": -0.19174,
@@ -57586,9 +57586,9 @@
               "volume": 2580,
               "previous_volume": 4320,
               "iv": 10.260182663124885,
-              "bid_price": 1533.7,
+              "bid_price": 1532.8,
               "bid_quantity": 30,
-              "ask_price": 1544.8,
+              "ask_price": 1551.5,
               "ask_quantity": 30,
               "previous_close": 1761.45,
               "greeks": {
@@ -57608,9 +57608,9 @@
               "volume": 71220,
               "previous_volume": 183330,
               "iv": 14.195087084517926,
-              "bid_price": 215.9,
-              "bid_quantity": 90,
-              "ask_price": 217.05,
+              "bid_price": 216.15,
+              "bid_quantity": 60,
+              "ask_price": 217.5,
               "ask_quantity": 60,
               "previous_close": 186.75,
               "greeks": {
@@ -57632,9 +57632,9 @@
               "volume": 5730,
               "previous_volume": 6750,
               "iv": 9.906008313355313,
-              "bid_price": 1453.2,
-              "bid_quantity": 60,
-              "ask_price": 1467.95,
+              "bid_price": 1452.15,
+              "bid_quantity": 30,
+              "ask_price": 1467.8,
               "ask_quantity": 30,
               "previous_close": 1656.05,
               "greeks": {
@@ -57654,9 +57654,9 @@
               "volume": 117840,
               "previous_volume": 158400,
               "iv": 14.146447215366356,
-              "bid_price": 236.05,
+              "bid_price": 236.45,
               "bid_quantity": 60,
-              "ask_price": 236.9,
+              "ask_price": 237.35,
               "ask_quantity": 60,
               "previous_close": 203.4,
               "greeks": {
@@ -57678,9 +57678,9 @@
               "volume": 3600,
               "previous_volume": 20730,
               "iv": 10.386107600986957,
-              "bid_price": 1375.8,
+              "bid_price": 1373.3,
               "bid_quantity": 30,
-              "ask_price": 1391.15,
+              "ask_price": 1385.1,
               "ask_quantity": 30,
               "previous_close": 1560.3,
               "greeks": {
@@ -57700,10 +57700,10 @@
               "volume": 96570,
               "previous_volume": 144120,
               "iv": 14.16142956559261,
-              "bid_price": 257.85,
+              "bid_price": 258.1,
               "bid_quantity": 60,
-              "ask_price": 259,
-              "ask_quantity": 90,
+              "ask_price": 259.35,
+              "ask_quantity": 60,
               "previous_close": 218.7,
               "greeks": {
                 "delta": -0.23778,
@@ -57724,10 +57724,10 @@
               "volume": 4770,
               "previous_volume": 9750,
               "iv": 10.456746181871734,
-              "bid_price": 1299.4,
+              "bid_price": 1298.8,
               "bid_quantity": 30,
-              "ask_price": 1310.9,
-              "ask_quantity": 30,
+              "ask_price": 1317.4,
+              "ask_quantity": 60,
               "previous_close": 1494.9,
               "greeks": {
                 "delta": 0.80724,
@@ -57738,70 +57738,70 @@
             },
             "PE": {
               "security_id": 59078,
-              "ltp": 282.95,
+              "ltp": 283,
               "average_price": 283.01,
               "oi": 118410,
               "previous_oi": 124830,
               "oi_change": -6420,
-              "volume": 122070,
+              "volume": 122100,
               "previous_volume": 154740,
-              "iv": 14.043061487276463,
-              "bid_price": 280.9,
-              "bid_quantity": 30,
-              "ask_price": 282.7,
-              "ask_quantity": 90,
+              "iv": 14.0523950812102,
+              "bid_price": 281.5,
+              "bid_quantity": 60,
+              "ask_price": 282.95,
+              "ask_quantity": 60,
               "previous_close": 239.05,
               "greeks": {
-                "delta": -0.25504,
-                "theta": -11.80904,
+                "delta": -0.25495,
+                "theta": -11.81848,
                 "gamma": 0.00018,
-                "vega": 41.58411
+                "vega": 41.57612
               }
             }
           },
           "57000.000000": {
             "CE": {
               "security_id": 59079,
-              "ltp": 1229.45,
-              "average_price": 1268.24,
+              "ltp": 1232.2,
+              "average_price": 1268.23,
               "oi": 621060,
               "previous_oi": 627930,
               "oi_change": -6870,
-              "volume": 156900,
+              "volume": 156930,
               "previous_volume": 337320,
-              "iv": 10.617976672027982,
-              "bid_price": 1230.55,
-              "bid_quantity": 60,
-              "ask_price": 1235.55,
+              "iv": 10.62543930672058,
+              "bid_price": 1229.95,
+              "bid_quantity": 120,
+              "ask_price": 1234.25,
               "ask_quantity": 60,
               "previous_close": 1408.3,
               "greeks": {
-                "delta": 0.78504,
-                "theta": -23.04251,
+                "delta": 0.78555,
+                "theta": -23.04373,
                 "gamma": 0.00021,
-                "vega": 37.83222
+                "vega": 37.78162
               }
             },
             "PE": {
               "security_id": 59080,
-              "ltp": 307,
-              "average_price": 309.35,
+              "ltp": 308.25,
+              "average_price": 309.34,
               "oi": 984750,
               "previous_oi": 964560,
               "oi_change": 20190,
-              "volume": 890670,
+              "volume": 891240,
               "previous_volume": 1289370,
-              "iv": 14.006231628569065,
-              "bid_price": 306.6,
-              "bid_quantity": 150,
-              "ask_price": 307.75,
+              "iv": 14.007592214892597,
+              "bid_price": 307.05,
+              "bid_quantity": 90,
+              "ask_price": 308.15,
               "ask_quantity": 60,
               "previous_close": 259.4,
               "greeks": {
-                "delta": -0.27166,
-                "theta": -12.0193,
+                "delta": -0.27248,
+                "theta": -12.03149,
                 "gamma": 0.00018,
-                "vega": 42.95036
+                "vega": 43.01115
               }
             }
           },
@@ -57816,9 +57816,9 @@
               "volume": 11190,
               "previous_volume": 21180,
               "iv": 10.638125114863465,
-              "bid_price": 1156.2,
+              "bid_price": 1153.2,
               "bid_quantity": 30,
-              "ask_price": 1167.35,
+              "ask_price": 1163.65,
               "ask_quantity": 30,
               "previous_close": 1341.45,
               "greeks": {
@@ -57830,24 +57830,24 @@
             },
             "PE": {
               "security_id": 59082,
-              "ltp": 335,
+              "ltp": 336,
               "average_price": 336.85,
               "oi": 102270,
               "previous_oi": 101400,
               "oi_change": 870,
-              "volume": 115740,
+              "volume": 115830,
               "previous_volume": 153960,
-              "iv": 13.990033129609708,
-              "bid_price": 334.5,
+              "iv": 13.99171959797741,
+              "bid_price": 335.05,
               "bid_quantity": 60,
-              "ask_price": 335.7,
+              "ask_price": 336.2,
               "ask_quantity": 60,
               "previous_close": 283.9,
               "greeks": {
-                "delta": -0.29008,
-                "theta": -12.22944,
+                "delta": -0.2907,
+                "theta": -12.23785,
                 "gamma": 0.00019,
-                "vega": 44.33554
+                "vega": 44.37744
               }
             }
           },
@@ -57862,9 +57862,9 @@
               "volume": 15390,
               "previous_volume": 56340,
               "iv": 10.801004863051281,
-              "bid_price": 1086.2,
+              "bid_price": 1084.05,
               "bid_quantity": 30,
-              "ask_price": 1095.5,
+              "ask_price": 1095.7,
               "ask_quantity": 30,
               "previous_close": 1263.65,
               "greeks": {
@@ -57884,10 +57884,10 @@
               "volume": 164130,
               "previous_volume": 222570,
               "iv": 13.946037242867119,
-              "bid_price": 364.05,
-              "bid_quantity": 30,
-              "ask_price": 365.4,
-              "ask_quantity": 120,
+              "bid_price": 364.6,
+              "bid_quantity": 60,
+              "ask_price": 365.95,
+              "ask_quantity": 90,
               "previous_close": 305.75,
               "greeks": {
                 "delta": -0.3097,
@@ -57910,7 +57910,7 @@
               "iv": 10.990912298827102,
               "bid_price": 1018.9,
               "bid_quantity": 30,
-              "ask_price": 1027.2,
+              "ask_price": 1026.45,
               "ask_quantity": 30,
               "previous_close": 1196.1,
               "greeks": {
@@ -57930,10 +57930,10 @@
               "volume": 173910,
               "previous_volume": 284550,
               "iv": 13.915289144994375,
-              "bid_price": 395.75,
-              "bid_quantity": 60,
-              "ask_price": 397.3,
-              "ask_quantity": 90,
+              "bid_price": 396.45,
+              "bid_quantity": 90,
+              "ask_price": 397.85,
+              "ask_quantity": 120,
               "previous_close": 334.6,
               "greeks": {
                 "delta": -0.33045,
@@ -57954,9 +57954,9 @@
               "volume": 37080,
               "previous_volume": 121590,
               "iv": 11.053726750839191,
-              "bid_price": 954.75,
+              "bid_price": 954.35,
               "bid_quantity": 60,
-              "ask_price": 961.6,
+              "ask_price": 961.95,
               "ask_quantity": 30,
               "previous_close": 1118.5,
               "greeks": {
@@ -57968,94 +57968,94 @@
             },
             "PE": {
               "security_id": 59089,
-              "ltp": 431.4,
+              "ltp": 432.55,
               "average_price": 431.75,
               "oi": 139050,
               "previous_oi": 119460,
               "oi_change": 19590,
-              "volume": 423600,
+              "volume": 423960,
               "previous_volume": 402750,
-              "iv": 13.916254057652216,
-              "bid_price": 430.05,
-              "bid_quantity": 120,
-              "ask_price": 431.45,
-              "ask_quantity": 150,
+              "iv": 13.946190772828725,
+              "bid_price": 430.6,
+              "bid_quantity": 180,
+              "ask_price": 431.85,
+              "ask_quantity": 120,
               "previous_close": 364.9,
               "greeks": {
-                "delta": -0.34973,
-                "theta": -12.5422,
+                "delta": -0.34985,
+                "theta": -12.58181,
                 "gamma": 0.00021,
-                "vega": 47.9525
+                "vega": 47.95845
               }
             }
           },
           "57500.000000": {
             "CE": {
               "security_id": 59090,
-              "ltp": 896,
+              "ltp": 892.55,
               "average_price": 929.47,
               "oi": 450330,
               "previous_oi": 416340,
               "oi_change": 33990,
-              "volume": 374370,
+              "volume": 374400,
               "previous_volume": 1012830,
-              "iv": 11.046932670962567,
-              "bid_price": 894.15,
-              "bid_quantity": 60,
-              "ask_price": 897.1,
-              "ask_quantity": 180,
+              "iv": 11.050023301980938,
+              "bid_price": 893.4,
+              "bid_quantity": 120,
+              "ask_price": 895.65,
+              "ask_quantity": 60,
               "previous_close": 1044,
               "greeks": {
-                "delta": 0.65939,
-                "theta": -24.49604,
+                "delta": 0.65795,
+                "theta": -24.49895,
                 "gamma": 0.00026,
-                "vega": 47.48401
+                "vega": 47.55525
               }
             },
             "PE": {
               "security_id": 59091,
-              "ltp": 466.75,
+              "ltp": 468.6,
               "average_price": 464.43,
               "oi": 507960,
               "previous_oi": 509040,
               "oi_change": -1080,
-              "volume": 770220,
+              "volume": 770550,
               "previous_volume": 1126080,
-              "iv": 13.90484762873527,
-              "bid_price": 465.9,
-              "bid_quantity": 120,
-              "ask_price": 467.6,
-              "ask_quantity": 120,
+              "iv": 13.93370626429735,
+              "bid_price": 467.35,
+              "bid_quantity": 90,
+              "ask_price": 468.1,
+              "ask_quantity": 30,
               "previous_close": 393,
               "greeks": {
-                "delta": -0.3699,
-                "theta": -12.55453,
+                "delta": -0.37039,
+                "theta": -12.59268,
                 "gamma": 0.00021,
-                "vega": 48.89239
+                "vega": 48.91169
               }
             }
           },
           "57600.000000": {
             "CE": {
               "security_id": 59092,
-              "ltp": 832.5,
+              "ltp": 833.8,
               "average_price": 866.18,
-              "oi": 131220,
+              "oi": 131130,
               "previous_oi": 128610,
-              "oi_change": 2610,
-              "volume": 151860,
+              "oi_change": 2520,
+              "volume": 151890,
               "previous_volume": 453060,
-              "iv": 11.132074880771917,
-              "bid_price": 832.15,
+              "iv": 11.087826137535961,
+              "bid_price": 831.55,
               "bid_quantity": 60,
-              "ask_price": 834.9,
-              "ask_quantity": 60,
+              "ask_price": 834,
+              "ask_quantity": 90,
               "previous_close": 980.15,
               "greeks": {
-                "delta": 0.63063,
-                "theta": -24.58596,
+                "delta": 0.63254,
+                "theta": -24.53432,
                 "gamma": 0.00026,
-                "vega": 48.86407
+                "vega": 48.78496
               }
             },
             "PE": {
@@ -58068,9 +58068,9 @@
               "volume": 402210,
               "previous_volume": 588240,
               "iv": 13.889109114579407,
-              "bid_price": 505,
-              "bid_quantity": 30,
-              "ask_price": 506.4,
+              "bid_price": 505.3,
+              "bid_quantity": 60,
+              "ask_price": 507.15,
               "ask_quantity": 60,
               "previous_close": 426.65,
               "greeks": {
@@ -58084,254 +58084,254 @@
           "57700.000000": {
             "CE": {
               "security_id": 59094,
-              "ltp": 773.5,
-              "average_price": 797.03,
+              "ltp": 775.7,
+              "average_price": 797.02,
               "oi": 238830,
               "previous_oi": 186660,
               "oi_change": 52170,
-              "volume": 471000,
+              "volume": 471240,
               "previous_volume": 1051590,
-              "iv": 11.088508011222658,
-              "bid_price": 774.6,
-              "bid_quantity": 90,
-              "ask_price": 776.7,
-              "ask_quantity": 60,
+              "iv": 11.154107439769357,
+              "bid_price": 774.05,
+              "bid_quantity": 60,
+              "ask_price": 776.15,
+              "ask_quantity": 90,
               "previous_close": 916.2,
               "greeks": {
-                "delta": 0.6061,
-                "theta": -24.44781,
+                "delta": 0.60508,
+                "theta": -24.53036,
                 "gamma": 0.00027,
-                "vega": 49.82596
+                "vega": 49.85928
               }
             },
             "PE": {
               "security_id": 59095,
-              "ltp": 546.85,
+              "ltp": 547,
               "average_price": 548.13,
               "oi": 199920,
               "previous_oi": 186390,
               "oi_change": 13530,
-              "volume": 746190,
+              "volume": 747660,
               "previous_volume": 845100,
-              "iv": 13.910371534738516,
-              "bid_price": 546.1,
+              "iv": 13.89911681147109,
+              "bid_price": 546.75,
               "bid_quantity": 60,
-              "ask_price": 547.7,
+              "ask_price": 548.25,
               "ask_quantity": 60,
               "previous_close": 462.15,
               "greeks": {
-                "delta": -0.41247,
-                "theta": -12.44423,
+                "delta": -0.41279,
+                "theta": -12.42694,
                 "gamma": 0.00022,
-                "vega": 50.4169
+                "vega": 50.42399
               }
             }
           },
           "57800.000000": {
             "CE": {
               "security_id": 59096,
-              "ltp": 720.7,
-              "average_price": 745.95,
+              "ltp": 718.95,
+              "average_price": 745.93,
               "oi": 386730,
               "previous_oi": 254100,
               "oi_change": 132630,
-              "volume": 1056120,
+              "volume": 1056810,
               "previous_volume": 1750620,
-              "iv": 11.17980174172912,
-              "bid_price": 719.15,
-              "bid_quantity": 120,
-              "ask_price": 720.75,
-              "ask_quantity": 30,
+              "iv": 11.184211091356765,
+              "bid_price": 718.35,
+              "bid_quantity": 60,
+              "ask_price": 719.95,
+              "ask_quantity": 90,
               "previous_close": 852.9,
               "greeks": {
-                "delta": 0.57877,
-                "theta": -24.40649,
+                "delta": 0.57783,
+                "theta": -24.40414,
                 "gamma": 0.00027,
-                "vega": 50.65431
+                "vega": 50.67512
               }
             },
             "PE": {
               "security_id": 59097,
               "ltp": 590.4,
-              "average_price": 588.68,
+              "average_price": 588.69,
               "oi": 252600,
               "previous_oi": 213090,
               "oi_change": 39510,
-              "volume": 1649970,
+              "volume": 1650900,
               "previous_volume": 1674720,
-              "iv": 13.891472101238817,
-              "bid_price": 591,
-              "bid_quantity": 30,
-              "ask_price": 591.55,
-              "ask_quantity": 30,
+              "iv": 13.901819431082648,
+              "bid_price": 590.4,
+              "bid_quantity": 120,
+              "ask_price": 592.1,
+              "ask_quantity": 60,
               "previous_close": 501.65,
               "greeks": {
-                "delta": -0.43474,
-                "theta": -12.26372,
+                "delta": -0.43451,
+                "theta": -12.28033,
                 "gamma": 0.00022,
-                "vega": 50.97025
+                "vega": 50.96591
               }
             }
           },
           "57900.000000": {
             "CE": {
               "security_id": 59098,
-              "ltp": 664.25,
-              "average_price": 701.61,
-              "oi": 243330,
+              "ltp": 665.6,
+              "average_price": 701.6,
+              "oi": 242970,
               "previous_oi": 157200,
-              "oi_change": 86130,
-              "volume": 967260,
+              "oi_change": 85770,
+              "volume": 967440,
               "previous_volume": 1455150,
-              "iv": 11.18974372267,
-              "bid_price": 664.8,
-              "bid_quantity": 90,
-              "ask_price": 666.7,
+              "iv": 11.19961580890184,
+              "bid_price": 663.8,
+              "bid_quantity": 60,
+              "ask_price": 665.75,
               "ask_quantity": 60,
               "previous_close": 793.9,
               "greeks": {
-                "delta": 0.55074,
-                "theta": -24.17121,
+                "delta": 0.55113,
+                "theta": -24.18961,
                 "gamma": 0.00027,
-                "vega": 51.2438
+                "vega": 51.23821
               }
             },
             "PE": {
               "security_id": 59099,
-              "ltp": 635.85,
+              "ltp": 639.25,
               "average_price": 626.99,
               "oi": 182340,
               "previous_oi": 189810,
               "oi_change": -7470,
-              "volume": 1471770,
+              "volume": 1471950,
               "previous_volume": 1587090,
-              "iv": 13.885544294465147,
-              "bid_price": 635.25,
-              "bid_quantity": 180,
-              "ask_price": 637.25,
+              "iv": 13.921976845777392,
+              "bid_price": 637,
+              "bid_quantity": 90,
+              "ask_price": 637.95,
               "ask_quantity": 30,
               "previous_close": 540.65,
               "greeks": {
-                "delta": -0.45675,
-                "theta": -12.04179,
+                "delta": -0.45757,
+                "theta": -12.08267,
                 "gamma": 0.00022,
-                "vega": 51.35874
+                "vega": 51.36684
               }
             }
           },
           "58000.000000": {
             "CE": {
               "security_id": 59108,
-              "ltp": 614.95,
-              "average_price": 644.59,
+              "ltp": 613.95,
+              "average_price": 644.58,
               "oi": 2393790,
               "previous_oi": 2332500,
               "oi_change": 61290,
-              "volume": 2113740,
+              "volume": 2115030,
               "previous_volume": 4068600,
-              "iv": 11.20666569102956,
-              "bid_price": 613.5,
-              "bid_quantity": 210,
-              "ask_price": 615,
-              "ask_quantity": 360,
+              "iv": 11.256996047765325,
+              "bid_price": 613.05,
+              "bid_quantity": 120,
+              "ask_price": 614.7,
+              "ask_quantity": 60,
               "previous_close": 736.1,
               "greeks": {
-                "delta": 0.52459,
-                "theta": -23.89416,
+                "delta": 0.52265,
+                "theta": -23.93639,
                 "gamma": 0.00027,
-                "vega": 51.56771
+                "vega": 51.57595
               }
             },
             "PE": {
               "security_id": 59109,
-              "ltp": 685.6,
+              "ltp": 686.85,
               "average_price": 676.2,
               "oi": 1750620,
               "previous_oi": 1767060,
               "oi_change": -16440,
-              "volume": 2297040,
+              "volume": 2297820,
               "previous_volume": 2895420,
-              "iv": 13.946092149439645,
+              "iv": 13.962987995898235,
               "bid_price": 685,
-              "bid_quantity": 90,
-              "ask_price": 685.6,
+              "bid_quantity": 60,
+              "ask_price": 686.45,
               "ask_quantity": 30,
               "previous_close": 583,
               "greeks": {
-                "delta": -0.47831,
-                "theta": -11.85878,
+                "delta": -0.47849,
+                "theta": -11.87976,
                 "gamma": 0.00022,
-                "vega": 51.58833
+                "vega": 51.58842
               }
             }
           },
           "58100.000000": {
             "CE": {
               "security_id": 59111,
-              "ltp": 564.45,
+              "ltp": 563.4,
               "average_price": 598.46,
-              "oi": 254280,
+              "oi": 254460,
               "previous_oi": 257310,
-              "oi_change": -3030,
-              "volume": 517080,
+              "oi_change": -2850,
+              "volume": 517200,
               "previous_volume": 1006320,
-              "iv": 11.192796446694816,
-              "bid_price": 564.5,
-              "bid_quantity": 90,
-              "ask_price": 566.4,
-              "ask_quantity": 60,
+              "iv": 11.233265267685354,
+              "bid_price": 563.6,
+              "bid_quantity": 180,
+              "ask_price": 565,
+              "ask_quantity": 30,
               "previous_close": 683.7,
               "greeks": {
-                "delta": 0.49726,
-                "theta": -23.48535,
-                "gamma": 0.00028,
-                "vega": 51.66512
+                "delta": 0.49557,
+                "theta": -23.51305,
+                "gamma": 0.00027,
+                "vega": 51.65673
               }
             },
             "PE": {
               "security_id": 59112,
-              "ltp": 733.15,
+              "ltp": 732.65,
               "average_price": 725.98,
               "oi": 258060,
               "previous_oi": 274320,
               "oi_change": -16260,
-              "volume": 488340,
+              "volume": 488370,
               "previous_volume": 743400,
-              "iv": 13.889957999310045,
-              "bid_price": 732.65,
+              "iv": 13.890452022859536,
+              "bid_price": 733.75,
               "bid_quantity": 90,
-              "ask_price": 735.35,
+              "ask_price": 736.25,
               "ask_quantity": 60,
               "previous_close": 628.45,
               "greeks": {
-                "delta": -0.50056,
-                "theta": -11.44314,
+                "delta": -0.50033,
+                "theta": -11.44789,
                 "gamma": 0.00022,
-                "vega": 51.66375
+                "vega": 51.66472
               }
             }
           },
           "58200.000000": {
             "CE": {
               "security_id": 59114,
-              "ltp": 519.1,
-              "average_price": 548.93,
+              "ltp": 519.4,
+              "average_price": 548.92,
               "oi": 181680,
               "previous_oi": 168810,
               "oi_change": 12870,
-              "volume": 326430,
+              "volume": 326490,
               "previous_volume": 702240,
-              "iv": 11.26917998447137,
-              "bid_price": 518.95,
+              "iv": 11.256068903712912,
+              "bid_price": 518.45,
               "bid_quantity": 60,
-              "ask_price": 520.6,
+              "ask_price": 519.9,
               "ask_quantity": 60,
               "previous_close": 632.8,
               "greeks": {
-                "delta": 0.46896,
-                "theta": -23.10785,
+                "delta": 0.46948,
+                "theta": -23.10027,
                 "gamma": 0.00027,
-                "vega": 51.50556
+                "vega": 51.51206
               }
             },
             "PE": {
@@ -58344,9 +58344,9 @@
               "volume": 334470,
               "previous_volume": 406320,
               "iv": 13.95223083614657,
-              "bid_price": 786.45,
+              "bid_price": 787.3,
               "bid_quantity": 60,
-              "ask_price": 789.5,
+              "ask_price": 790.4,
               "ask_quantity": 90,
               "previous_close": 673.65,
               "greeks": {
@@ -58360,24 +58360,24 @@
           "58300.000000": {
             "CE": {
               "security_id": 59119,
-              "ltp": 475.9,
-              "average_price": 505.43,
+              "ltp": 475.6,
+              "average_price": 505.42,
               "oi": 114750,
               "previous_oi": 81420,
               "oi_change": 33330,
-              "volume": 223110,
+              "volume": 223140,
               "previous_volume": 425700,
-              "iv": 11.280790172137438,
-              "bid_price": 475.55,
-              "bid_quantity": 60,
-              "ask_price": 477.1,
-              "ask_quantity": 90,
+              "iv": 11.285512361474606,
+              "bid_price": 475.05,
+              "bid_quantity": 90,
+              "ask_price": 476.65,
+              "ask_quantity": 60,
               "previous_close": 582.9,
               "greeks": {
-                "delta": 0.44241,
-                "theta": -22.59852,
+                "delta": 0.44211,
+                "theta": -22.59846,
                 "gamma": 0.00027,
-                "vega": 51.12385
+                "vega": 51.11651
               }
             },
             "PE": {
@@ -58390,9 +58390,9 @@
               "volume": 196980,
               "previous_volume": 155940,
               "iv": 14.024416595124578,
-              "bid_price": 842.95,
+              "bid_price": 843.95,
               "bid_quantity": 60,
-              "ask_price": 845.6,
+              "ask_price": 846.4,
               "ask_quantity": 60,
               "previous_close": 720.05,
               "greeks": {
@@ -58406,24 +58406,24 @@
           "58400.000000": {
             "CE": {
               "security_id": 59124,
-              "ltp": 434.55,
-              "average_price": 457.46,
+              "ltp": 433.2,
+              "average_price": 457.44,
               "oi": 76200,
               "previous_oi": 56100,
               "oi_change": 20100,
-              "volume": 185550,
+              "volume": 185730,
               "previous_volume": 313560,
-              "iv": 11.297732955769405,
-              "bid_price": 434.7,
+              "iv": 11.257943715578774,
+              "bid_price": 434,
               "bid_quantity": 60,
-              "ask_price": 435.95,
+              "ask_price": 435.45,
               "ask_quantity": 90,
               "previous_close": 537.6,
               "greeks": {
-                "delta": 0.41562,
-                "theta": -22.01777,
+                "delta": 0.41572,
+                "theta": -21.96644,
                 "gamma": 0.00027,
-                "vega": 50.50217
+                "vega": 50.50592
               }
             },
             "PE": {
@@ -58436,9 +58436,9 @@
               "volume": 41790,
               "previous_volume": 52470,
               "iv": 14.054657259665523,
-              "bid_price": 899.65,
+              "bid_price": 901.5,
               "bid_quantity": 30,
-              "ask_price": 904.25,
+              "ask_price": 906.45,
               "ask_quantity": 30,
               "previous_close": 772.65,
               "greeks": {
@@ -58452,24 +58452,24 @@
           "58500.000000": {
             "CE": {
               "security_id": 59126,
-              "ltp": 397.8,
-              "average_price": 421.73,
+              "ltp": 396.4,
+              "average_price": 421.72,
               "oi": 742140,
               "previous_oi": 649740,
               "oi_change": 92400,
-              "volume": 1057950,
+              "volume": 1058040,
               "previous_volume": 2232420,
-              "iv": 11.327384826034558,
-              "bid_price": 396.65,
+              "iv": 11.313864180024687,
+              "bid_price": 396.4,
               "bid_quantity": 30,
-              "ask_price": 397.65,
+              "ask_price": 397.1,
               "ask_quantity": 90,
               "previous_close": 491.3,
               "greeks": {
-                "delta": 0.39036,
-                "theta": -21.42156,
+                "delta": 0.38974,
+                "theta": -21.38616,
                 "gamma": 0.00026,
-                "vega": 49.70036
+                "vega": 49.67572
               }
             },
             "PE": {
@@ -58482,10 +58482,10 @@
               "volume": 229050,
               "previous_volume": 333330,
               "iv": 14.155515755076085,
-              "bid_price": 961.65,
+              "bid_price": 962.7,
               "bid_quantity": 60,
-              "ask_price": 965.2,
-              "ask_quantity": 60,
+              "ask_price": 966.45,
+              "ask_quantity": 120,
               "previous_close": 828.9,
               "greeks": {
                 "delta": -0.5854,
@@ -58506,10 +58506,10 @@
               "volume": 202290,
               "previous_volume": 286620,
               "iv": 11.360012411362812,
-              "bid_price": 360.45,
-              "bid_quantity": 90,
-              "ask_price": 361.85,
-              "ask_quantity": 150,
+              "bid_price": 360,
+              "bid_quantity": 180,
+              "ask_price": 361.45,
+              "ask_quantity": 210,
               "previous_close": 448.9,
               "greeks": {
                 "delta": 0.36368,
@@ -58528,9 +58528,9 @@
               "volume": 15150,
               "previous_volume": 24000,
               "iv": 14.276703594286488,
-              "bid_price": 1024.35,
+              "bid_price": 1024.25,
               "bid_quantity": 30,
-              "ask_price": 1031.95,
+              "ask_price": 1035.7,
               "ask_quantity": 30,
               "previous_close": 886.2,
               "greeks": {
@@ -58552,9 +58552,9 @@
               "volume": 141900,
               "previous_volume": 285720,
               "iv": 11.2989121633614,
-              "bid_price": 326.8,
-              "bid_quantity": 30,
-              "ask_price": 328.15,
+              "bid_price": 326.25,
+              "bid_quantity": 60,
+              "ask_price": 327.7,
               "ask_quantity": 30,
               "previous_close": 410.8,
               "greeks": {
@@ -58574,9 +58574,9 @@
               "volume": 16020,
               "previous_volume": 21330,
               "iv": 13.984655055944511,
-              "bid_price": 1089.05,
-              "bid_quantity": 60,
-              "ask_price": 1099.2,
+              "bid_price": 1088.25,
+              "bid_quantity": 30,
+              "ask_price": 1099.9,
               "ask_quantity": 30,
               "previous_close": 952.2,
               "greeks": {
@@ -58590,24 +58590,24 @@
           "58800.000000": {
             "CE": {
               "security_id": 59139,
-              "ltp": 295.55,
-              "average_price": 315.16,
+              "ltp": 295.75,
+              "average_price": 315.15,
               "oi": 66810,
               "previous_oi": 56880,
               "oi_change": 9930,
-              "volume": 143820,
+              "volume": 143880,
               "previous_volume": 247710,
-              "iv": 11.372204047208333,
-              "bid_price": 295.5,
+              "iv": 11.349415077267983,
+              "bid_price": 295.2,
               "bid_quantity": 90,
-              "ask_price": 296.7,
-              "ask_quantity": 90,
+              "ask_price": 296.3,
+              "ask_quantity": 120,
               "previous_close": 372.95,
               "greeks": {
-                "delta": 0.31493,
-                "theta": -19.16657,
+                "delta": 0.31553,
+                "theta": -19.16056,
                 "gamma": 0.00024,
-                "vega": 45.99538
+                "vega": 46.0351
               }
             },
             "PE": {
@@ -58620,9 +58620,9 @@
               "volume": 47340,
               "previous_volume": 21330,
               "iv": 14.199226723044347,
-              "bid_price": 1161.05,
+              "bid_price": 1162.2,
               "bid_quantity": 30,
-              "ask_price": 1168,
+              "ask_price": 1171.7,
               "ask_quantity": 30,
               "previous_close": 1019.35,
               "greeks": {
@@ -58644,10 +58644,10 @@
               "volume": 148680,
               "previous_volume": 283560,
               "iv": 11.33143524790887,
-              "bid_price": 266.9,
-              "bid_quantity": 60,
-              "ask_price": 268,
-              "ask_quantity": 60,
+              "bid_price": 266.45,
+              "bid_quantity": 30,
+              "ask_price": 267.7,
+              "ask_quantity": 30,
               "previous_close": 341.85,
               "greeks": {
                 "delta": 0.2929,
@@ -58666,9 +58666,9 @@
               "volume": 8970,
               "previous_volume": 10650,
               "iv": 14.441369391206235,
-              "bid_price": 1220.2,
+              "bid_price": 1225.15,
               "bid_quantity": 30,
-              "ask_price": 1239.2,
+              "ask_price": 1240.65,
               "ask_quantity": 30,
               "previous_close": 1065,
               "greeks": {
@@ -58682,24 +58682,24 @@
           "59000.000000": {
             "CE": {
               "security_id": 59145,
-              "ltp": 241.3,
-              "average_price": 259.4,
+              "ltp": 240.55,
+              "average_price": 259.38,
               "oi": 1187160,
               "previous_oi": 1094160,
               "oi_change": 93000,
-              "volume": 806580,
+              "volume": 807540,
               "previous_volume": 1983420,
-              "iv": 11.384536918056327,
-              "bid_price": 240.95,
-              "bid_quantity": 120,
-              "ask_price": 241.8,
-              "ask_quantity": 60,
+              "iv": 11.384221826940525,
+              "bid_price": 240.7,
+              "bid_quantity": 60,
+              "ask_price": 241.3,
+              "ask_quantity": 30,
               "previous_close": 307.5,
               "greeks": {
-                "delta": 0.27076,
-                "theta": -17.53113,
+                "delta": 0.27015,
+                "theta": -17.50541,
                 "gamma": 0.00022,
-                "vega": 42.87936
+                "vega": 42.82823
               }
             },
             "PE": {
@@ -58712,10 +58712,10 @@
               "volume": 105540,
               "previous_volume": 157860,
               "iv": 14.641890302790351,
-              "bid_price": 1306.1,
-              "bid_quantity": 30,
-              "ask_price": 1312.95,
-              "ask_quantity": 60,
+              "bid_price": 1308.2,
+              "bid_quantity": 60,
+              "ask_price": 1314.75,
+              "ask_quantity": 30,
               "previous_close": 1147.75,
               "greeks": {
                 "delta": -0.6804,
@@ -58737,9 +58737,9 @@
               "previous_volume": 236160,
               "iv": 11.369502105067937,
               "bid_price": 215.65,
-              "bid_quantity": 30,
-              "ask_price": 216.7,
-              "ask_quantity": 30,
+              "bid_quantity": 60,
+              "ask_price": 216.65,
+              "ask_quantity": 60,
               "previous_close": 277.5,
               "greeks": {
                 "delta": 0.2493,
@@ -58758,9 +58758,9 @@
               "volume": 1710,
               "previous_volume": 1320,
               "iv": 14.65216121703619,
-              "bid_price": 1371.4,
+              "bid_price": 1377.65,
               "bid_quantity": 30,
-              "ask_price": 1387.45,
+              "ask_price": 1389.55,
               "ask_quantity": 30,
               "previous_close": 1232.45,
               "greeks": {
@@ -58782,10 +58782,10 @@
               "volume": 89370,
               "previous_volume": 133020,
               "iv": 11.40538787722085,
-              "bid_price": 193.05,
-              "bid_quantity": 150,
-              "ask_price": 193.95,
-              "ask_quantity": 90,
+              "bid_price": 192.8,
+              "bid_quantity": 60,
+              "ask_price": 193.7,
+              "ask_quantity": 30,
               "previous_close": 250.9,
               "greeks": {
                 "delta": 0.2268,
@@ -58804,9 +58804,9 @@
               "volume": 6540,
               "previous_volume": 3630,
               "iv": 15.068283266367514,
-              "bid_price": 1448.6,
+              "bid_price": 1451.95,
               "bid_quantity": 30,
-              "ask_price": 1466.2,
+              "ask_price": 1469.25,
               "ask_quantity": 30,
               "previous_close": 1292.65,
               "greeks": {
@@ -58820,24 +58820,24 @@
           "59300.000000": {
             "CE": {
               "security_id": 59151,
-              "ltp": 173.05,
-              "average_price": 185.35,
+              "ltp": 173,
+              "average_price": 185.34,
               "oi": 74820,
               "previous_oi": 54870,
               "oi_change": 19950,
-              "volume": 101700,
+              "volume": 101760,
               "previous_volume": 243090,
-              "iv": 11.435307909726541,
-              "bid_price": 172.6,
-              "bid_quantity": 210,
-              "ask_price": 173.5,
+              "iv": 11.402770179959997,
+              "bid_price": 172.4,
+              "bid_quantity": 90,
+              "ask_price": 173.25,
               "ask_quantity": 60,
               "previous_close": 223.4,
               "greeks": {
-                "delta": 0.20925,
-                "theta": -14.8767,
+                "delta": 0.20965,
+                "theta": -14.86465,
                 "gamma": 0.00019,
-                "vega": 37.24069
+                "vega": 37.28537
               }
             },
             "PE": {
@@ -58850,9 +58850,9 @@
               "volume": 1620,
               "previous_volume": 4920,
               "iv": 14.819283905898207,
-              "bid_price": 1530.2,
-              "bid_quantity": 30,
-              "ask_price": 1543.65,
+              "bid_price": 1524.9,
+              "bid_quantity": 120,
+              "ask_price": 1545.9,
               "ask_quantity": 30,
               "previous_close": 1343.35,
               "greeks": {
@@ -58866,24 +58866,24 @@
           "59400.000000": {
             "CE": {
               "security_id": 59153,
-              "ltp": 154.9,
-              "average_price": 166.42,
+              "ltp": 155.25,
+              "average_price": 166.41,
               "oi": 69420,
               "previous_oi": 54450,
               "oi_change": 14970,
-              "volume": 153570,
+              "volume": 153630,
               "previous_volume": 184320,
-              "iv": 11.450220443488769,
-              "bid_price": 154.65,
+              "iv": 11.436026406266,
+              "bid_price": 154.75,
               "bid_quantity": 60,
-              "ask_price": 155.25,
-              "ask_quantity": 90,
+              "ask_price": 155.35,
+              "ask_quantity": 60,
               "previous_close": 202.9,
               "greeks": {
-                "delta": 0.19166,
-                "theta": -14.02189,
+                "delta": 0.19218,
+                "theta": -14.03551,
                 "gamma": 0.00018,
-                "vega": 35.32907
+                "vega": 35.3897
               }
             },
             "PE": {
@@ -58896,9 +58896,9 @@
               "volume": 150,
               "previous_volume": 1560,
               "iv": 15.18808966140535,
-              "bid_price": 1599.8,
+              "bid_price": 1608.2,
               "bid_quantity": 30,
-              "ask_price": 1636.55,
+              "ask_price": 1633.6,
               "ask_quantity": 30,
               "previous_close": 1418.35,
               "greeks": {
@@ -58912,24 +58912,24 @@
           "59500.000000": {
             "CE": {
               "security_id": 59155,
-              "ltp": 138.15,
-              "average_price": 150.34,
+              "ltp": 138.55,
+              "average_price": 150.33,
               "oi": 385890,
               "previous_oi": 348000,
               "oi_change": 37890,
-              "volume": 414720,
+              "volume": 414900,
               "previous_volume": 766650,
-              "iv": 11.455262829049131,
+              "iv": 11.494156759963296,
               "bid_price": 138.05,
-              "bid_quantity": 90,
-              "ask_price": 138.5,
+              "bid_quantity": 60,
+              "ask_price": 138.55,
               "ask_quantity": 60,
               "previous_close": 180.4,
               "greeks": {
-                "delta": 0.17501,
-                "theta": -13.16044,
+                "delta": 0.17496,
+                "theta": -13.19202,
                 "gamma": 0.00017,
-                "vega": 33.38412
+                "vega": 33.37474
               }
             },
             "PE": {
@@ -58942,9 +58942,9 @@
               "volume": 11070,
               "previous_volume": 23220,
               "iv": 15.23695472290793,
-              "bid_price": 1695,
+              "bid_price": 1698.55,
               "bid_quantity": 30,
-              "ask_price": 1708.75,
+              "ask_price": 1710.3,
               "ask_quantity": 30,
               "previous_close": 1502.55,
               "greeks": {
@@ -58966,10 +58966,10 @@
               "volume": 88980,
               "previous_volume": 152850,
               "iv": 11.532985546800436,
-              "bid_price": 122.8,
-              "bid_quantity": 270,
-              "ask_price": 123.4,
-              "ask_quantity": 60,
+              "bid_price": 122.7,
+              "bid_quantity": 60,
+              "ask_price": 123.3,
+              "ask_quantity": 30,
               "previous_close": 167.9,
               "greeks": {
                 "delta": 0.15888,
@@ -58988,8 +58988,8 @@
               "volume": 780,
               "previous_volume": 180,
               "iv": 15.690645081417479,
-              "bid_price": 1767.75,
-              "bid_quantity": 60,
+              "bid_price": 1771.95,
+              "bid_quantity": 30,
               "ask_price": 1837.45,
               "ask_quantity": 30,
               "previous_close": 1600,
@@ -59004,24 +59004,24 @@
           "59700.000000": {
             "CE": {
               "security_id": 59161,
-              "ltp": 109.85,
+              "ltp": 109.65,
               "average_price": 122.82,
               "oi": 29520,
               "previous_oi": 21420,
               "oi_change": 8100,
-              "volume": 109530,
+              "volume": 109560,
               "previous_volume": 95910,
-              "iv": 11.526313969335892,
-              "bid_price": 109.75,
-              "bid_quantity": 60,
-              "ask_price": 110.25,
-              "ask_quantity": 60,
+              "iv": 11.530625213410438,
+              "bid_price": 109.55,
+              "bid_quantity": 30,
+              "ask_price": 110.2,
+              "ask_quantity": 30,
               "previous_close": 143.45,
               "greeks": {
-                "delta": 0.14491,
-                "theta": -11.53696,
+                "delta": 0.14466,
+                "theta": -11.52522,
                 "gamma": 0.00015,
-                "vega": 29.50433
+                "vega": 29.46855
               }
             },
             "PE": {
@@ -59035,7 +59035,7 @@
               "previous_volume": 90,
               "iv": 17.529126341521305,
               "bid_price": 1832.95,
-              "bid_quantity": 60,
+              "bid_quantity": 30,
               "ask_price": 1927.5,
               "ask_quantity": 30,
               "previous_close": 1812.7,
@@ -59058,10 +59058,10 @@
               "volume": 122880,
               "previous_volume": 105810,
               "iv": 11.58242723927291,
-              "bid_price": 97.9,
+              "bid_price": 97.95,
               "bid_quantity": 30,
-              "ask_price": 98.3,
-              "ask_quantity": 30,
+              "ask_price": 98.65,
+              "ask_quantity": 90,
               "previous_close": 129.1,
               "greeks": {
                 "delta": 0.13173,
@@ -59080,7 +59080,7 @@
               "volume": 0,
               "previous_volume": 60,
               "iv": 22.283678210887366,
-              "bid_price": 1919.8,
+              "bid_price": 1920.3,
               "bid_quantity": 30,
               "ask_price": 1998.8,
               "ask_quantity": 30,
@@ -59096,24 +59096,24 @@
           "59900.000000": {
             "CE": {
               "security_id": 59165,
-              "ltp": 87.5,
-              "average_price": 96.44,
-              "oi": 63480,
+              "ltp": 86.85,
+              "average_price": 96.43,
+              "oi": 63510,
               "previous_oi": 54240,
-              "oi_change": 9240,
-              "volume": 100650,
+              "oi_change": 9270,
+              "volume": 100710,
               "previous_volume": 180330,
-              "iv": 11.64981570747886,
-              "bid_price": 86.95,
-              "bid_quantity": 150,
+              "iv": 11.627801092131437,
+              "bid_price": 86.9,
+              "bid_quantity": 30,
               "ask_price": 87.5,
               "ask_quantity": 30,
               "previous_close": 116.65,
               "greeks": {
-                "delta": 0.11935,
-                "theta": -10.06233,
+                "delta": 0.1188,
+                "theta": -10.01205,
                 "gamma": 0.00013,
-                "vega": 25.8046
+                "vega": 25.7208
               }
             },
             "PE": {
@@ -59142,24 +59142,24 @@
           "60000.000000": {
             "CE": {
               "security_id": 59167,
-              "ltp": 78.3,
+              "ltp": 78.15,
               "average_price": 83.87,
               "oi": 1201050,
               "previous_oi": 1062360,
               "oi_change": 138690,
-              "volume": 808920,
+              "volume": 809100,
               "previous_volume": 1323090,
-              "iv": 11.689990831381552,
-              "bid_price": 78.2,
-              "bid_quantity": 240,
+              "iv": 11.710691183568985,
+              "bid_price": 78.15,
+              "bid_quantity": 30,
               "ask_price": 78.35,
-              "ask_quantity": 30,
+              "ask_quantity": 60,
               "previous_close": 101.05,
               "greeks": {
-                "delta": 0.10859,
-                "theta": -9.38803,
+                "delta": 0.10827,
+                "theta": -9.37947,
                 "gamma": 0.00012,
-                "vega": 24.1263
+                "vega": 24.07256
               }
             },
             "PE": {
@@ -59172,9 +59172,9 @@
               "volume": 22110,
               "previous_volume": 58350,
               "iv": 16.54217891057727,
-              "bid_price": 2133.7,
-              "bid_quantity": 60,
-              "ask_price": 2150.3,
+              "bid_price": 2137.2,
+              "bid_quantity": 30,
+              "ask_price": 2151.25,
               "ask_quantity": 30,
               "previous_close": 1924.2,
               "greeks": {
@@ -59196,10 +59196,10 @@
               "volume": 52530,
               "previous_volume": 138150,
               "iv": 11.739394708579546,
-              "bid_price": 68.45,
-              "bid_quantity": 420,
+              "bid_price": 68.4,
+              "bid_quantity": 240,
               "ask_price": 69.15,
-              "ask_quantity": 60,
+              "ask_quantity": 30,
               "previous_close": 90.05,
               "greeks": {
                 "delta": 0.09679,
@@ -59242,10 +59242,10 @@
               "volume": 17670,
               "previous_volume": 15870,
               "iv": 11.765178878466537,
-              "bid_price": 60.7,
-              "bid_quantity": 270,
+              "bid_price": 60.6,
+              "bid_quantity": 630,
               "ask_price": 61.65,
-              "ask_quantity": 90,
+              "ask_quantity": 150,
               "previous_close": 79.7,
               "greeks": {
                 "delta": 0.08749,
@@ -59266,8 +59266,8 @@
               "iv": 35.42267645602396,
               "bid_price": 2278.5,
               "bid_quantity": 30,
-              "ask_price": 2401.9,
-              "ask_quantity": 450,
+              "ask_price": 2395.3,
+              "ask_quantity": 150,
               "previous_close": 2933,
               "greeks": {
                 "delta": -0.63661,
@@ -59288,9 +59288,9 @@
               "volume": 29610,
               "previous_volume": 11640,
               "iv": 11.830572276600773,
-              "bid_price": 53.95,
-              "bid_quantity": 600,
-              "ask_price": 54.5,
+              "bid_price": 53.75,
+              "bid_quantity": 180,
+              "ask_price": 54.45,
               "ask_quantity": 30,
               "previous_close": 69.4,
               "greeks": {
@@ -59334,10 +59334,10 @@
               "volume": 48900,
               "previous_volume": 149130,
               "iv": 11.896026138410836,
-              "bid_price": 47.75,
-              "bid_quantity": 90,
-              "ask_price": 48.4,
-              "ask_quantity": 630,
+              "bid_price": 47.55,
+              "bid_quantity": 60,
+              "ask_price": 48.2,
+              "ask_quantity": 150,
               "previous_close": 61.1,
               "greeks": {
                 "delta": 0.07032,
@@ -59372,24 +59372,24 @@
           "60500.000000": {
             "CE": {
               "security_id": 59202,
-              "ltp": 42.95,
-              "average_price": 45.17,
+              "ltp": 43,
+              "average_price": 45.14,
               "oi": 389100,
               "previous_oi": 401700,
               "oi_change": -12600,
-              "volume": 216420,
+              "volume": 218880,
               "previous_volume": 500400,
-              "iv": 11.94840975256864,
+              "iv": 11.957197327540214,
               "bid_price": 42.75,
-              "bid_quantity": 90,
-              "ask_price": 42.95,
-              "ask_quantity": 60,
+              "bid_quantity": 60,
+              "ask_price": 43,
+              "ask_quantity": 90,
               "previous_close": 53.65,
               "greeks": {
-                "delta": 0.06435,
-                "theta": -6.31515,
+                "delta": 0.06438,
+                "theta": -6.32104,
                 "gamma": 8e-05,
-                "vega": 16.29264
+                "vega": 16.29714
               }
             },
             "PE": {
@@ -59402,9 +59402,9 @@
               "volume": 780,
               "previous_volume": 8190,
               "iv": 18.252135518317964,
-              "bid_price": 2591.8,
+              "bid_price": 2595.35,
               "bid_quantity": 30,
-              "ask_price": 2618.75,
+              "ask_price": 2617.65,
               "ask_quantity": 30,
               "previous_close": 2353.55,
               "greeks": {
@@ -59510,24 +59510,24 @@
           "60800.000000": {
             "CE": {
               "security_id": 59214,
-              "ltp": 30.75,
-              "average_price": 33.32,
+              "ltp": 31,
+              "average_price": 33.31,
               "oi": 16230,
               "previous_oi": 16230,
               "oi_change": 0,
-              "volume": 32340,
+              "volume": 32370,
               "previous_volume": 29760,
-              "iv": 12.173506800571001,
-              "bid_price": 30.7,
-              "bid_quantity": 420,
-              "ask_price": 31.15,
-              "ask_quantity": 210,
+              "iv": 12.210827738931503,
+              "bid_price": 30.6,
+              "bid_quantity": 210,
+              "ask_price": 31,
+              "ask_quantity": 120,
               "previous_close": 38.55,
               "greeks": {
-                "delta": 0.04753,
-                "theta": -5.0016,
+                "delta": 0.04774,
+                "theta": -5.03324,
                 "gamma": 6e-05,
-                "vega": 12.82737
+                "vega": 12.87192
               }
             },
             "PE": {
@@ -59585,17 +59585,17 @@
               "oi_change": 0,
               "volume": 0,
               "previous_volume": 0,
-              "iv": 77.13888102860807,
+              "iv": 77.15306004023314,
               "bid_price": 2804.25,
               "bid_quantity": 300,
               "ask_price": 3199.65,
               "ask_quantity": 300,
               "previous_close": 5640,
               "greeks": {
-                "delta": -0.57498,
-                "theta": -96.09506,
+                "delta": -0.5749,
+                "theta": -96.12243,
                 "gamma": 4e-05,
-                "vega": 50.74701
+                "vega": 50.74939
               }
             }
           },
@@ -59603,23 +59603,23 @@
             "CE": {
               "security_id": 59221,
               "ltp": 24.75,
-              "average_price": 26.19,
+              "average_price": 26.18,
               "oi": 661470,
               "previous_oi": 649560,
               "oi_change": 11910,
-              "volume": 196590,
+              "volume": 197220,
               "previous_volume": 482580,
-              "iv": 12.362470451738506,
-              "bid_price": 24.75,
+              "iv": 12.366473387480207,
+              "bid_price": 24.8,
               "bid_quantity": 30,
-              "ask_price": 24.9,
-              "ask_quantity": 180,
+              "ask_price": 24.85,
+              "ask_quantity": 240,
               "previous_close": 30.05,
               "greeks": {
-                "delta": 0.03885,
-                "theta": -4.28194,
+                "delta": 0.03884,
+                "theta": -4.28222,
                 "gamma": 5e-05,
-                "vega": 10.8982
+                "vega": 10.8956
               }
             },
             "PE": {
@@ -59632,9 +59632,9 @@
               "volume": 1440,
               "previous_volume": 12120,
               "iv": 19.294972724695477,
-              "bid_price": 3056.75,
+              "bid_price": 3060.45,
               "bid_quantity": 30,
-              "ask_price": 3091.8,
+              "ask_price": 3091.25,
               "ask_quantity": 30,
               "previous_close": 2849.6,
               "greeks": {
@@ -59694,24 +59694,24 @@
           "61200.000000": {
             "CE": {
               "security_id": 59228,
-              "ltp": 20.6,
+              "ltp": 20.2,
               "average_price": 21.51,
               "oi": 73470,
               "previous_oi": 68940,
               "oi_change": 4530,
-              "volume": 63870,
+              "volume": 63930,
               "previous_volume": 59370,
-              "iv": 12.609694482881839,
-              "bid_price": 20.25,
-              "bid_quantity": 30,
-              "ask_price": 20.4,
-              "ask_quantity": 270,
+              "iv": 12.56880218698516,
+              "bid_price": 20.2,
+              "bid_quantity": 120,
+              "ask_price": 20.35,
+              "ask_quantity": 60,
               "previous_close": 24.4,
               "greeks": {
-                "delta": 0.03253,
-                "theta": -3.74878,
+                "delta": 0.03207,
+                "theta": -3.69305,
                 "gamma": 4e-05,
-                "vega": 9.42166
+                "vega": 9.31045
               }
             },
             "PE": {
@@ -59726,7 +59726,7 @@
               "iv": 26.348229170185615,
               "bid_price": 3199.35,
               "bid_quantity": 330,
-              "ask_price": 3389.6,
+              "ask_price": 3387.2,
               "ask_quantity": 300,
               "previous_close": 3250,
               "greeks": {
@@ -59769,17 +59769,17 @@
               "oi_change": 0,
               "volume": 0,
               "previous_volume": 0,
-              "iv": 78.36455953183818,
+              "iv": 78.38960705286601,
               "bid_price": 3096.95,
               "bid_quantity": 300,
               "ask_price": 3587.85,
               "ask_quantity": 300,
               "previous_close": 5960.15,
               "greeks": {
-                "delta": -0.58734,
-                "theta": -96.80581,
+                "delta": -0.58721,
+                "theta": -96.8546,
                 "gamma": 4e-05,
-                "vega": 50.41849
+                "vega": 50.42356
               }
             }
           },
@@ -59793,17 +59793,17 @@
               "oi_change": 0,
               "volume": 0,
               "previous_volume": 0,
-              "iv": 34.70661007594647,
+              "iv": 34.71881533555635,
               "bid_price": 15.95,
               "bid_quantity": 300,
               "ask_price": 87.45,
               "ask_quantity": 600,
               "previous_close": 641.2,
               "greeks": {
-                "delta": 0.24883,
-                "theta": -42.61207,
+                "delta": 0.24878,
+                "theta": -42.6196,
                 "gamma": 7e-05,
-                "vega": 41.05056
+                "vega": 41.04365
               }
             },
             "PE": {
@@ -59815,17 +59815,17 @@
               "oi_change": 0,
               "volume": 0,
               "previous_volume": 0,
-              "iv": 78.70583296596443,
+              "iv": 78.68482708466405,
               "bid_price": 3193.95,
               "bid_quantity": 300,
               "ask_price": 3759,
               "ask_quantity": 300,
               "previous_close": 6041.2,
               "greeks": {
-                "delta": -0.59017,
-                "theta": -97.03477,
+                "delta": -0.59029,
+                "theta": -96.99532,
                 "gamma": 4e-05,
-                "vega": 50.33835
+                "vega": 50.33232
               }
             }
           },
@@ -59841,9 +59841,9 @@
               "previous_volume": 234120,
               "iv": 12.958844963058592,
               "bid_price": 15.3,
-              "bid_quantity": 60,
+              "bid_quantity": 30,
               "ask_price": 15.4,
-              "ask_quantity": 30,
+              "ask_quantity": 150,
               "previous_close": 18.15,
               "greeks": {
                 "delta": 0.02459,
@@ -59862,7 +59862,7 @@
               "volume": 270,
               "previous_volume": 30,
               "iv": 21.669752595126543,
-              "bid_price": 3556.3,
+              "bid_price": 3557.55,
               "bid_quantity": 30,
               "ask_price": 3613.3,
               "ask_quantity": 30,
@@ -59885,17 +59885,17 @@
               "oi_change": 0,
               "volume": 0,
               "previous_volume": 0,
-              "iv": 34.949624025720475,
+              "iv": 34.9615882248599,
               "bid_price": 13.1,
               "bid_quantity": 300,
               "ask_price": 75.75,
               "ask_quantity": 660,
               "previous_close": 607.4,
               "greeks": {
-                "delta": 0.23748,
-                "theta": -41.73844,
+                "delta": 0.23743,
+                "theta": -41.74551,
                 "gamma": 7e-05,
-                "vega": 40.02721
+                "vega": 40.02045
               }
             },
             "PE": {
@@ -59907,17 +59907,17 @@
               "oi_change": 0,
               "volume": 0,
               "previous_volume": 0,
-              "iv": 79.33169563613627,
-              "bid_price": 3480.95,
+              "iv": 79.31931057269776,
+              "bid_price": 3483.55,
               "bid_quantity": 300,
-              "ask_price": 3840.55,
+              "ask_price": 3837.95,
               "ask_quantity": 300,
               "previous_close": 6204.45,
               "greeks": {
-                "delta": -0.59606,
-                "theta": -97.36632,
+                "delta": -0.59613,
+                "theta": -97.34331,
                 "gamma": 4e-05,
-                "vega": 50.15817
+                "vega": 50.154
               }
             }
           },
@@ -59953,17 +59953,17 @@
               "oi_change": 0,
               "volume": 0,
               "previous_volume": 0,
-              "iv": 79.60085500981899,
+              "iv": 79.66606055646827,
               "bid_price": 3402.3,
               "bid_quantity": 870,
-              "ask_price": 4134.75,
+              "ask_price": 4134.45,
               "ask_quantity": 300,
               "previous_close": 6286.6,
               "greeks": {
-                "delta": -0.59919,
-                "theta": -97.43829,
+                "delta": -0.59885,
+                "theta": -97.56656,
                 "gamma": 4e-05,
-                "vega": 50.0542
+                "vega": 50.06941
               }
             }
           },
@@ -59977,17 +59977,17 @@
               "oi_change": 0,
               "volume": 0,
               "previous_volume": 0,
-              "iv": 35.18761636621272,
+              "iv": 35.19121609441988,
               "bid_price": 10.75,
               "bid_quantity": 300,
               "ask_price": 65.5,
               "ask_quantity": 600,
               "previous_close": 575.1,
               "greeks": {
-                "delta": 0.22653,
-                "theta": -40.83651,
+                "delta": 0.22652,
+                "theta": -40.83928,
                 "gamma": 7e-05,
-                "vega": 38.98799
+                "vega": 38.98571
               }
             },
             "PE": {
@@ -59999,17 +59999,17 @@
               "oi_change": 0,
               "volume": 0,
               "previous_volume": 0,
-              "iv": 79.96552301522537,
+              "iv": 79.96922351567301,
               "bid_price": 3492.3,
               "bid_quantity": 300,
-              "ask_price": 4305.4,
+              "ask_price": 4300.6,
               "ask_quantity": 300,
               "previous_close": 6369.15,
               "greeks": {
-                "delta": -0.60179,
-                "theta": -97.69113,
+                "delta": -0.60177,
+                "theta": -97.69953,
                 "gamma": 4e-05,
-                "vega": 49.97177
+                "vega": 49.97144
               }
             }
           },
@@ -60045,41 +60045,41 @@
               "oi_change": 0,
               "volume": 0,
               "previous_volume": 0,
-              "iv": 80.26016607014277,
+              "iv": 80.31409337097364,
               "bid_price": 3584.4,
               "bid_quantity": 300,
-              "ask_price": 4432.15,
+              "ask_price": 4429.95,
               "ask_quantity": 300,
               "previous_close": 6452.1,
               "greeks": {
-                "delta": -0.60473,
-                "theta": -97.80116,
+                "delta": -0.60445,
+                "theta": -97.90816,
                 "gamma": 4e-05,
-                "vega": 49.86969
+                "vega": 49.88257
               }
             }
           },
           "62000.000000": {
             "CE": {
               "security_id": 59254,
-              "ltp": 10.55,
+              "ltp": 10.5,
               "average_price": 10.92,
               "oi": 374190,
               "previous_oi": 374040,
               "oi_change": 150,
-              "volume": 115680,
+              "volume": 115980,
               "previous_volume": 282540,
-              "iv": 13.65186544948281,
-              "bid_price": 10.55,
-              "bid_quantity": 90,
-              "ask_price": 10.6,
-              "ask_quantity": 180,
+              "iv": 13.64876842158605,
+              "bid_price": 10.5,
+              "bid_quantity": 30,
+              "ask_price": 10.55,
+              "ask_quantity": 60,
               "previous_close": 11.9,
               "greeks": {
-                "delta": 0.01677,
-                "theta": -2.27193,
+                "delta": 0.01671,
+                "theta": -2.26353,
                 "gamma": 2e-05,
-                "vega": 5.39766
+                "vega": 5.37895
               }
             },
             "PE": {
@@ -60137,17 +60137,17 @@
               "oi_change": 0,
               "volume": 0,
               "previous_volume": 0,
-              "iv": 80.9152713537126,
+              "iv": 80.96989591688447,
               "bid_price": 3769.8,
               "bid_quantity": 300,
-              "ask_price": 4495.8,
+              "ask_price": 4495.3,
               "ask_quantity": 300,
               "previous_close": 6619,
               "greeks": {
-                "delta": -0.61017,
-                "theta": -98.13558,
+                "delta": -0.6099,
+                "theta": -98.24478,
                 "gamma": 4e-05,
-                "vega": 49.67731
+                "vega": 49.69077
               }
             }
           },
@@ -60183,17 +60183,17 @@
               "oi_change": 0,
               "volume": 0,
               "previous_volume": 0,
-              "iv": 81.27548163241582,
+              "iv": 81.29594192316605,
               "bid_price": 3861.4,
               "bid_quantity": 300,
-              "ask_price": 4600.5,
+              "ask_price": 4599.7,
               "ask_quantity": 300,
               "previous_close": 6702.95,
               "greeks": {
-                "delta": -0.61269,
-                "theta": -98.36061,
+                "delta": -0.61259,
+                "theta": -98.40254,
                 "gamma": 4e-05,
-                "vega": 49.58754
+                "vega": 49.59161
               }
             }
           },
@@ -60229,17 +60229,17 @@
               "oi_change": 0,
               "volume": 0,
               "previous_volume": 0,
-              "iv": 81.56545347403566,
+              "iv": 81.63320279607427,
               "bid_price": 3950.15,
               "bid_quantity": 300,
-              "ask_price": 4890.95,
+              "ask_price": 4888.75,
               "ask_quantity": 300,
               "previous_close": 6787.25,
               "greeks": {
-                "delta": -0.61554,
-                "theta": -98.44089,
+                "delta": -0.61519,
+                "theta": -98.57719,
                 "gamma": 4e-05,
-                "vega": 49.47739
+                "vega": 49.4947
               }
             }
           },
@@ -60278,7 +60278,7 @@
               "iv": 33.38346123881879,
               "bid_price": 4045.15,
               "bid_quantity": 300,
-              "ask_price": 4826.3,
+              "ask_price": 4825.2,
               "ask_quantity": 300,
               "previous_close": 4481.8,
               "greeks": {
@@ -60297,19 +60297,19 @@
               "oi": 101460,
               "previous_oi": 94950,
               "oi_change": 6510,
-              "volume": 85320,
+              "volume": 85410,
               "previous_volume": 72630,
-              "iv": 14.490357170430043,
+              "iv": 14.47443209013595,
               "bid_price": 7.8,
-              "bid_quantity": 210,
+              "bid_quantity": 30,
               "ask_price": 7.85,
-              "ask_quantity": 30,
+              "ask_quantity": 420,
               "previous_close": 8.95,
               "greeks": {
-                "delta": 0.0122,
-                "theta": -1.81267,
+                "delta": 0.01222,
+                "theta": -1.81251,
                 "gamma": 2e-05,
-                "vega": 4.10417
+                "vega": 4.10774
               }
             },
             "PE": {
@@ -60367,17 +60367,17 @@
               "oi_change": 0,
               "volume": 0,
               "previous_volume": 0,
-              "iv": 82.61916621707357,
-              "bid_price": 4195.15,
+              "iv": 82.64012524188527,
+              "bid_price": 4195.25,
               "bid_quantity": 300,
-              "ask_price": 5003.9,
+              "ask_price": 5002.8,
               "ask_quantity": 300,
               "previous_close": 7042.2,
               "greeks": {
-                "delta": -0.62297,
-                "theta": -99.02194,
+                "delta": -0.62287,
+                "theta": -99.0654,
                 "gamma": 4e-05,
-                "vega": 49.18816
+                "vega": 49.19262
               }
             }
           },
@@ -60413,17 +60413,17 @@
               "oi_change": 0,
               "volume": 0,
               "previous_volume": 0,
-              "iv": 82.92350480488956,
+              "iv": 82.93940508774959,
               "bid_price": 4285.6,
               "bid_quantity": 300,
-              "ask_price": 5186.95,
+              "ask_price": 5186.35,
               "ask_quantity": 300,
               "previous_close": 7127.8,
               "greeks": {
-                "delta": -0.62564,
-                "theta": -99.11268,
+                "delta": -0.62556,
+                "theta": -99.14545,
                 "gamma": 4e-05,
-                "vega": 49.07621
+                "vega": 49.08004
               }
             }
           },
@@ -60459,17 +60459,17 @@
               "oi_change": 0,
               "volume": 0,
               "previous_volume": 0,
-              "iv": 83.30158570705932,
-              "bid_price": 4359.6,
+              "iv": 83.33176648152498,
+              "bid_price": 4364.8,
               "bid_quantity": 300,
-              "ask_price": 5200.8,
+              "ask_price": 5199.6,
               "ask_quantity": 300,
               "previous_close": 7213.7,
               "greeks": {
-                "delta": -0.6279,
-                "theta": -99.34896,
+                "delta": -0.62775,
+                "theta": -99.41147,
                 "gamma": 4e-05,
-                "vega": 48.98418
+                "vega": 48.99134
               }
             }
           },
@@ -60505,41 +60505,41 @@
               "oi_change": 0,
               "volume": 0,
               "previous_volume": 0,
-              "iv": 83.60990470607841,
+              "iv": 83.62599768091134,
               "bid_price": 4475.1,
               "bid_quantity": 300,
-              "ask_price": 5292.2,
+              "ask_price": 5292,
               "ask_quantity": 300,
               "previous_close": 7299.95,
               "greeks": {
-                "delta": -0.63049,
-                "theta": -99.4391,
+                "delta": -0.63041,
+                "theta": -99.47246,
                 "gamma": 3e-05,
-                "vega": 48.87087
+                "vega": 48.87484
               }
             }
           },
           "63000.000000": {
             "CE": {
               "security_id": 59286,
-              "ltp": 6.4,
+              "ltp": 6.3,
               "average_price": 6.4,
-              "oi": 197040,
+              "oi": 197610,
               "previous_oi": 194400,
-              "oi_change": 2640,
-              "volume": 63180,
+              "oi_change": 3210,
+              "volume": 63270,
               "previous_volume": 95490,
-              "iv": 15.434594540227927,
-              "bid_price": 6.35,
-              "bid_quantity": 30,
+              "iv": 15.386584849833964,
+              "bid_price": 6.3,
+              "bid_quantity": 120,
               "ask_price": 6.4,
-              "ask_quantity": 30,
+              "ask_quantity": 270,
               "previous_close": 7,
               "greeks": {
-                "delta": 0.00959,
-                "theta": -1.55089,
+                "delta": 0.00948,
+                "theta": -1.53102,
                 "gamma": 1e-05,
-                "vega": 3.32844
+                "vega": 3.29532
               }
             },
             "PE": {
@@ -60552,9 +60552,9 @@
               "volume": 660,
               "previous_volume": 870,
               "iv": 26.44903206540652,
-              "bid_price": 5029.5,
+              "bid_price": 5035.5,
               "bid_quantity": 30,
-              "ask_price": 5081.9,
+              "ask_price": 5076.25,
               "ask_quantity": 30,
               "previous_close": 4840.05,
               "greeks": {
@@ -60597,17 +60597,17 @@
               "oi_change": 0,
               "volume": 0,
               "previous_volume": 0,
-              "iv": 84.31013191606927,
-              "bid_price": 4212.5,
+              "iv": 84.31988081364065,
+              "bid_price": 4215.1,
               "bid_quantity": 300,
-              "ask_price": 5541.05,
+              "ask_price": 5540.75,
               "ask_quantity": 300,
               "previous_close": 7473.3,
               "greeks": {
-                "delta": -0.63517,
-                "theta": -99.77885,
+                "delta": -0.63513,
+                "theta": -99.79934,
                 "gamma": 3e-05,
-                "vega": 48.66567
+                "vega": 48.6679
               }
             }
           },
@@ -60643,17 +60643,17 @@
               "oi_change": 0,
               "volume": 0,
               "previous_volume": 0,
-              "iv": 84.66244966970191,
-              "bid_price": 4290,
+              "iv": 84.72088835389727,
+              "bid_price": 4295.5,
               "bid_quantity": 300,
               "ask_price": 5593.25,
               "ask_quantity": 300,
               "previous_close": 7560.4,
               "greeks": {
-                "delta": -0.63746,
-                "theta": -99.94791,
+                "delta": -0.63717,
+                "theta": -100.06944,
                 "gamma": 3e-05,
-                "vega": 48.56278
+                "vega": 48.57852
               }
             }
           },
@@ -60713,17 +60713,17 @@
               "oi_change": 0,
               "volume": 0,
               "previous_volume": 0,
-              "iv": 36.80549051805866,
-              "bid_price": 4.55,
-              "bid_quantity": 600,
+              "iv": 36.77000782253597,
+              "bid_price": 4.5,
+              "bid_quantity": 300,
               "ask_price": 12.45,
               "ask_quantity": 780,
               "previous_close": 365,
               "greeks": {
-                "delta": 0.15269,
-                "theta": -32.97681,
+                "delta": 0.1528,
+                "theta": -32.96711,
                 "gamma": 5e-05,
-                "vega": 30.55072
+                "vega": 30.56746
               }
             },
             "PE": {
@@ -60735,41 +60735,41 @@
               "oi_change": 0,
               "volume": 0,
               "previous_volume": 0,
-              "iv": 85.3663726754636,
-              "bid_price": 4488.6,
+              "iv": 85.42547790954754,
+              "bid_price": 4493.6,
               "bid_quantity": 300,
               "ask_price": 5797.95,
               "ask_quantity": 300,
               "previous_close": 7735.45,
               "greeks": {
-                "delta": -0.64196,
-                "theta": -100.2749,
+                "delta": -0.64168,
+                "theta": -100.39848,
                 "gamma": 3e-05,
-                "vega": 48.35406
+                "vega": 48.37029
               }
             }
           },
           "63500.000000": {
             "CE": {
               "security_id": 59300,
-              "ltp": 5.2,
+              "ltp": 5.1,
               "average_price": 5.4,
               "oi": 26640,
               "previous_oi": 25320,
               "oi_change": 1320,
-              "volume": 11820,
+              "volume": 11970,
               "previous_volume": 27660,
-              "iv": 16.27067460719877,
-              "bid_price": 5.15,
+              "iv": 16.27124986590796,
+              "bid_price": 5.05,
               "bid_quantity": 30,
-              "ask_price": 5.3,
-              "ask_quantity": 90,
+              "ask_price": 5.15,
+              "ask_quantity": 1860,
               "previous_close": 5.9,
               "greeks": {
-                "delta": 0.00758,
-                "theta": -1.31919,
+                "delta": 0.00745,
+                "theta": -1.29894,
                 "gamma": 1e-05,
-                "vega": 2.70712
+                "vega": 2.66507
               }
             },
             "PE": {
@@ -60805,17 +60805,17 @@
               "oi_change": 0,
               "volume": 0,
               "previous_volume": 0,
-              "iv": 36.9533929026328,
+              "iv": 36.93721909615558,
               "bid_price": 4.2,
               "bid_quantity": 120,
               "ask_price": 7.25,
-              "ask_quantity": 150,
+              "ask_quantity": 750,
               "previous_close": 344.1,
               "greeks": {
-                "delta": 0.1451,
-                "theta": -31.95486,
+                "delta": 0.14515,
+                "theta": -31.95399,
                 "gamma": 5e-05,
-                "vega": 29.53044
+                "vega": 29.53711
               }
             },
             "PE": {
@@ -60827,17 +60827,17 @@
               "oi_change": 0,
               "volume": 0,
               "previous_volume": 0,
-              "iv": 86.08654050663756,
+              "iv": 86.13355155063374,
               "bid_price": 5130.8,
               "bid_quantity": 420,
               "ask_price": 5981.3,
               "ask_quantity": 300,
               "previous_close": 7911.6,
               "greeks": {
-                "delta": -0.64629,
-                "theta": -100.62303,
+                "delta": -0.64607,
+                "theta": -100.72201,
                 "gamma": 3e-05,
-                "vega": 48.14763
+                "vega": 48.1605
               }
             }
           },
@@ -60851,17 +60851,17 @@
               "oi_change": 0,
               "volume": 0,
               "previous_volume": 0,
-              "iv": 36.9126637122079,
+              "iv": 37.02929273174077,
               "bid_price": 4.1,
               "bid_quantity": 480,
               "ask_price": 6.3,
               "ask_quantity": 150,
               "previous_close": 334.05,
               "greeks": {
-                "delta": 0.1417,
-                "theta": -31.40559,
+                "delta": 0.14142,
+                "theta": -31.45098,
                 "gamma": 5e-05,
-                "vega": 29.07903
+                "vega": 29.02167
               }
             },
             "PE": {
@@ -60873,17 +60873,17 @@
               "oi_change": 0,
               "volume": 0,
               "previous_volume": 0,
-              "iv": 86.44221346590597,
+              "iv": 86.4678119371056,
               "bid_price": 5216.35,
               "bid_quantity": 300,
-              "ask_price": 6205.55,
+              "ask_price": 6204.65,
               "ask_quantity": 300,
               "previous_close": 8000.05,
               "greeks": {
-                "delta": -0.64844,
-                "theta": -100.78387,
+                "delta": -0.64832,
+                "theta": -100.83782,
                 "gamma": 3e-05,
-                "vega": 48.0421
+                "vega": 48.04929
               }
             }
           },
@@ -60919,17 +60919,17 @@
               "oi_change": 0,
               "volume": 0,
               "previous_volume": 0,
-              "iv": 86.77795887751195,
+              "iv": 86.8432067769616,
               "bid_price": 5305,
               "bid_quantity": 300,
-              "ask_price": 6202.4,
+              "ask_price": 6202.3,
               "ask_quantity": 300,
               "previous_close": 8088.8,
               "greeks": {
-                "delta": -0.65066,
-                "theta": -100.89883,
+                "delta": -0.65034,
+                "theta": -101.0366,
                 "gamma": 3e-05,
-                "vega": 47.93108
+                "vega": 47.94969
               }
             }
           },
@@ -60982,24 +60982,24 @@
           "64000.000000": {
             "CE": {
               "security_id": 59317,
-              "ltp": 4.25,
+              "ltp": 4.3,
               "average_price": 4.49,
-              "oi": 50430,
+              "oi": 50400,
               "previous_oi": 50370,
-              "oi_change": 60,
-              "volume": 14850,
+              "oi_change": 30,
+              "volume": 15150,
               "previous_volume": 52350,
-              "iv": 17.17049981780756,
-              "bid_price": 4.2,
-              "bid_quantity": 360,
-              "ask_price": 4.3,
+              "iv": 17.16859338506422,
+              "bid_price": 4.25,
+              "bid_quantity": 30,
+              "ask_price": 4.4,
               "ask_quantity": 30,
               "previous_close": 4.9,
               "greeks": {
-                "delta": 0.00601,
-                "theta": -1.12621,
+                "delta": 0.00607,
+                "theta": -1.13714,
                 "gamma": 1e-05,
-                "vega": 2.20486
+                "vega": 2.22606
               }
             },
             "PE": {
@@ -61013,8 +61013,8 @@
               "previous_volume": 30,
               "iv": 35.07354589729655,
               "bid_price": 5997.15,
-              "bid_quantity": 60,
-              "ask_price": 6095.75,
+              "bid_quantity": 30,
+              "ask_price": 6088.65,
               "ask_quantity": 120,
               "previous_close": 5900,
               "greeks": {
@@ -61057,17 +61057,17 @@
               "oi_change": 0,
               "volume": 0,
               "previous_volume": 0,
-              "iv": 87.89776139911517,
-              "bid_price": 5373.5,
+              "iv": 87.91494647435339,
+              "bid_price": 5376,
               "bid_quantity": 300,
-              "ask_price": 6506.45,
+              "ask_price": 6506.35,
               "ask_quantity": 300,
               "previous_close": 8356.45,
               "greeks": {
-                "delta": -0.65663,
-                "theta": -101.46767,
+                "delta": -0.65655,
+                "theta": -101.50435,
                 "gamma": 3e-05,
-                "vega": 47.62672
+                "vega": 47.63149
               }
             }
           },
@@ -61105,7 +61105,7 @@
               "previous_volume": 30,
               "iv": 0,
               "bid_price": 5721.45,
-              "bid_quantity": 330,
+              "bid_quantity": 450,
               "ask_price": 6603.8,
               "ask_quantity": 450,
               "previous_close": 5581.85,
@@ -61214,22 +61214,22 @@
               "security_id": 59330,
               "ltp": 3.8,
               "average_price": 3.99,
-              "oi": 36870,
+              "oi": 37020,
               "previous_oi": 36240,
-              "oi_change": 630,
-              "volume": 16380,
+              "oi_change": 780,
+              "volume": 16410,
               "previous_volume": 42540,
-              "iv": 18.137837779246976,
+              "iv": 18.133041845572077,
               "bid_price": 3.8,
-              "bid_quantity": 1320,
+              "bid_quantity": 1290,
               "ask_price": 3.9,
               "ask_quantity": 30,
               "previous_close": 4.5,
               "greeks": {
                 "delta": 0.00516,
-                "theta": -1.0337,
+                "theta": -1.03369,
                 "gamma": 1e-05,
-                "vega": 1.92691
+                "vega": 1.92733
               }
             },
             "PE": {
@@ -61241,17 +61241,17 @@
               "oi_change": 0,
               "volume": 0,
               "previous_volume": 0,
-              "iv": 89.36645587136111,
-              "bid_price": 5793.05,
+              "iv": 89.39243402175997,
+              "bid_price": 5795.35,
               "bid_quantity": 300,
               "ask_price": 6893.3,
               "ask_quantity": 300,
               "previous_close": 8716.6,
               "greeks": {
-                "delta": -0.66438,
-                "theta": -102.14154,
+                "delta": -0.66426,
+                "theta": -102.19729,
                 "gamma": 3e-05,
-                "vega": 47.21136
+                "vega": 47.21908
               }
             }
           },
@@ -61442,24 +61442,24 @@
           "65000.000000": {
             "CE": {
               "security_id": 59340,
-              "ltp": 2.95,
+              "ltp": 2.9,
               "average_price": 3.14,
-              "oi": 275760,
+              "oi": 275580,
               "previous_oi": 242550,
-              "oi_change": 33210,
-              "volume": 123300,
+              "oi_change": 33030,
+              "volume": 123420,
               "previous_volume": 64800,
-              "iv": 18.807525671371373,
+              "iv": 18.764150418180805,
               "bid_price": 2.9,
-              "bid_quantity": 3420,
+              "bid_quantity": 3300,
               "ask_price": 3,
-              "ask_quantity": 480,
+              "ask_quantity": 510,
               "previous_close": 3.75,
               "greeks": {
-                "delta": 0.00396,
-                "theta": -0.84199,
+                "delta": 0.00391,
+                "theta": -0.82997,
                 "gamma": 0,
-                "vega": 1.52111
+                "vega": 1.5027
               }
             },
             "PE": {
@@ -61472,7 +61472,7 @@
               "volume": 1560,
               "previous_volume": 690,
               "iv": 33.04018828356591,
-              "bid_price": 7024.3,
+              "bid_price": 7014.95,
               "bid_quantity": 30,
               "ask_price": 7064.2,
               "ask_quantity": 30,
@@ -61932,10 +61932,10 @@
               "volume": 3780,
               "previous_volume": 90,
               "iv": 38.60981101180746,
-              "bid_price": 8011.1,
+              "bid_price": 8020.25,
               "bid_quantity": 30,
-              "ask_price": 8062.15,
-              "ask_quantity": 30,
+              "ask_price": 8068.6,
+              "ask_quantity": 150,
               "previous_close": 7811.5,
               "greeks": {
                 "delta": -0.92485,
