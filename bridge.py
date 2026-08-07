@@ -799,7 +799,7 @@ print(
 
 print("=" * 60)
 # Keep Render Web Service alive
-from flask import Flask
+from flask import Flask, send_file
 import threading
 import os
 
@@ -814,3 +814,18 @@ def run_server():
     app.run(host="0.0.0.0", port=port)
 
 threading.Thread(target=run_server, daemon=False).start()
+@app.route("/nifty-live")
+def nifty_live():
+    return send_file("nifty-live.json")
+
+@app.route("/nifty-option-chain")
+def nifty_option_chain():
+    return send_file("nifty-option-chain.json")
+
+@app.route("/banknifty-live")
+def banknifty_live():
+    return send_file("banknifty-live.json")
+
+@app.route("/banknifty-option-chain")
+def banknifty_option_chain():
+    return send_file("banknifty-option-chain.json")
