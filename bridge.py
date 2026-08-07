@@ -798,3 +798,19 @@ print(
 )
 
 print("=" * 60)
+# Keep Render Web Service alive
+from flask import Flask
+import threading
+import os
+
+app = Flask(__name__)
+
+@app.route("/")
+def home():
+    return "PSYCHO MARKET BRIDGE ONLINE"
+
+def run_server():
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port)
+
+threading.Thread(target=run_server, daemon=False).start()
