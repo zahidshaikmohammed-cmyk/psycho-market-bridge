@@ -3,13 +3,9 @@ name: PSYCHO Market Bridge
 on:
   workflow_dispatch:
 
-  schedule:
-    # GitHub cron uses UTC.
-    # Runs every 5 minutes, Monday-Friday, during the broad Indian market window.
-    - cron: "*/5 3-10 * * 1-5"
-
 permissions:
   contents: write
+  actions: write
 
 jobs:
   update-market-data:
@@ -18,23 +14,39 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GH_PAT }}
 
       - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
-      - name: Run PSYCHO Market Bridge
+      - name: Generate fresh DHAN market data
         env:
           DHAN_ACCESS_TOKEN: ${{ secrets.DHAN_ACCESS_TOKEN }}
           DHAN_CLIENT_ID: ${{ secrets.DHAN_CLIENT_ID }}
         run: python bridge.py
 
-      - name: Commit generated market data
+      - name: Commit fresh market data
         run: |
           git config user.name "psycho-market-bridge"
           git config user.email "actions@github.com"
           git add market-live.json
-          git diff --cached --quiet && echo "No market-data changes to commit" && exit 0
-          git commit -m "Auto-update PSYCHO market data"
+          git diff --cached --quiet || git commit -m "Auto-update PSYCHO market data"
           git push
+
+      - name: Wait 5 minutes
+        run: sleep 300
+
+      - name: Trigger next bridge refresh
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          curl -L \
+            -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer $GH_TOKEN" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/${{ github.repository }}/actions/workflows/bridge.yml/dispatches \
+            -d '{"ref":"main"}'
