@@ -669,11 +669,10 @@ for instrument_name, config in INSTRUMENTS.items():
     )
 
     if isinstance(daily, list) and isinstance(candles_5m, list):
-
     daily = append_completed_daily_from_intraday(
         daily,
         candles_5m
-    )
+    )    
 
     # --------------------------------------------------------
     # WEEKLY
