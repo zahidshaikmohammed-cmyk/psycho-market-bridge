@@ -1,0 +1,31 @@
+name: PSYCHO Market Bridge
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-market-data:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Run bridge
+        run: python bridge.py
+
+      - name: Commit generated data
+        run: |
+          git config user.name "psycho-market-bridge"
+          git config user.email "actions@github.com"
+          git add market-live.json
+          git commit -m "Update market bridge data" || exit 0
+          git push
