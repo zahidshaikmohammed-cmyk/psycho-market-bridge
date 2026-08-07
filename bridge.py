@@ -5,9 +5,13 @@ from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 
 TOKEN = os.environ["DHAN_ACCESS_TOKEN"]
+CLIENT_ID = os.environ["DHAN_CLIENT_ID"]
 
 INTRADAY_URL = "https://api.dhan.co/v2/charts/intraday"
 HISTORICAL_URL = "https://api.dhan.co/v2/charts/historical"
+
+EXPIRY_LIST_URL = "https://api.dhan.co/v2/optionchain/expirylist"
+OPTION_CHAIN_URL = "https://api.dhan.co/v2/optionchain"
 
 # Dhan index security IDs
 INSTRUMENTS = {
@@ -18,6 +22,10 @@ INSTRUMENTS = {
 IST = ZoneInfo("Asia/Kolkata")
 now = datetime.now(IST)
 
+
+# ============================================================
+# DHAN REQUEST — CHART DATA
+# ============================================================
 
 def dhan_request(url, payload):
     body = json.dumps(payload).encode("utf-8")
@@ -36,6 +44,34 @@ def dhan_request(url, payload):
     with urllib.request.urlopen(request, timeout=30) as response:
         return json.loads(response.read().decode("utf-8"))
 
+
+# ============================================================
+# DHAN REQUEST — OPTION CHAIN
+# Requires both access-token and client-id
+# ============================================================
+
+def dhan_option_request(url, payload):
+    body = json.dumps(payload).encode("utf-8")
+
+    request = urllib.request.Request(
+        url,
+        data=body,
+        headers={
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "access-token": TOKEN,
+            "client-id": CLIENT_ID
+        },
+        method="POST"
+    )
+
+    with urllib.request.urlopen(request, timeout=30) as response:
+        return json.loads(response.read().decode("utf-8"))
+
+
+# ============================================================
+# NORMALIZE CANDLES
+# ============================================================
 
 def normalize_candles(raw):
     timestamps = raw.get("timestamp", [])
@@ -69,8 +105,11 @@ def normalize_candles(raw):
     return candles
 
 
+# ============================================================
+# INTRADAY DATA
+# ============================================================
+
 def fetch_intraday(security_id, interval):
-    # Enough history for Phase 2 structure analysis.
     from_time = now - timedelta(days=30)
 
     payload = {
@@ -84,11 +123,15 @@ def fetch_intraday(security_id, interval):
     }
 
     raw = dhan_request(INTRADAY_URL, payload)
+
     return normalize_candles(raw)
 
 
+# ============================================================
+# DAILY DATA
+# ============================================================
+
 def fetch_daily(security_id):
-    # ~2 years gives sufficient daily + weekly structural history.
     from_date = now - timedelta(days=730)
 
     # Dhan historical toDate is non-inclusive.
@@ -105,8 +148,13 @@ def fetch_daily(security_id):
     }
 
     raw = dhan_request(HISTORICAL_URL, payload)
+
     return normalize_candles(raw)
 
+
+# ============================================================
+# WEEKLY AGGREGATION
+# ============================================================
 
 def aggregate_weekly(daily_candles):
     weeks = {}
@@ -128,6 +176,7 @@ def aggregate_weekly(daily_candles):
                 "close": candle["close"],
                 "volume": candle["volume"]
             }
+
         else:
             week_candle = weeks[key]
 
@@ -148,6 +197,159 @@ def aggregate_weekly(daily_candles):
     return list(weeks.values())
 
 
+# ============================================================
+# OPTION EXPIRY
+# ============================================================
+
+def fetch_expiries(security_id):
+    payload = {
+        "UnderlyingScrip": int(security_id),
+        "UnderlyingSeg": "IDX_I"
+    }
+
+    response = dhan_option_request(
+        EXPIRY_LIST_URL,
+        payload
+    )
+
+    expiries = response.get("data", [])
+
+    if not expiries:
+        raise RuntimeError(
+            f"No option expiries returned for security ID {security_id}"
+        )
+
+    return expiries
+
+
+# ============================================================
+# OPTION CHAIN
+# ============================================================
+
+def fetch_option_chain(security_id, expiry):
+    payload = {
+        "UnderlyingScrip": int(security_id),
+        "UnderlyingSeg": "IDX_I",
+        "Expiry": expiry
+    }
+
+    response = dhan_option_request(
+        OPTION_CHAIN_URL,
+        payload
+    )
+
+    if response.get("status") != "success":
+        raise RuntimeError(
+            f"Option chain request failed: {response}"
+        )
+
+    return response.get("data", {})
+
+
+# ============================================================
+# BUILD OPTION CHAIN OUTPUT
+# ============================================================
+
+def build_option_chain(security_id):
+    expiries = fetch_expiries(security_id)
+
+    # Dhan returns active expiries.
+    # First active expiry = nearest expiry.
+    nearest_expiry = expiries[0]
+
+    chain_data = fetch_option_chain(
+        security_id,
+        nearest_expiry
+    )
+
+    underlying_ltp = chain_data.get("last_price")
+    raw_chain = chain_data.get("oc", {})
+
+    strikes = {}
+
+    for strike, option_data in raw_chain.items():
+
+        ce = option_data.get("ce")
+        pe = option_data.get("pe")
+
+        strike_output = {}
+
+        if ce:
+            ce_oi = ce.get("oi", 0)
+            ce_previous_oi = ce.get("previous_oi", 0)
+
+            strike_output["CE"] = {
+                "security_id": ce.get("security_id"),
+                "ltp": ce.get("last_price"),
+                "average_price": ce.get("average_price"),
+
+                "oi": ce_oi,
+                "previous_oi": ce_previous_oi,
+                "oi_change": ce_oi - ce_previous_oi,
+
+                "volume": ce.get("volume"),
+                "previous_volume": ce.get("previous_volume"),
+
+                "iv": ce.get("implied_volatility"),
+
+                "bid_price": ce.get("top_bid_price"),
+                "bid_quantity": ce.get("top_bid_quantity"),
+
+                "ask_price": ce.get("top_ask_price"),
+                "ask_quantity": ce.get("top_ask_quantity"),
+
+                "previous_close": ce.get(
+                    "previous_close_price"
+                ),
+
+                "greeks": ce.get("greeks", {})
+            }
+
+        if pe:
+            pe_oi = pe.get("oi", 0)
+            pe_previous_oi = pe.get("previous_oi", 0)
+
+            strike_output["PE"] = {
+                "security_id": pe.get("security_id"),
+                "ltp": pe.get("last_price"),
+                "average_price": pe.get("average_price"),
+
+                "oi": pe_oi,
+                "previous_oi": pe_previous_oi,
+                "oi_change": pe_oi - pe_previous_oi,
+
+                "volume": pe.get("volume"),
+                "previous_volume": pe.get("previous_volume"),
+
+                "iv": pe.get("implied_volatility"),
+
+                "bid_price": pe.get("top_bid_price"),
+                "bid_quantity": pe.get("top_bid_quantity"),
+
+                "ask_price": pe.get("top_ask_price"),
+                "ask_quantity": pe.get("top_ask_quantity"),
+
+                "previous_close": pe.get(
+                    "previous_close_price"
+                ),
+
+                "greeks": pe.get("greeks", {})
+            }
+
+        strikes[strike] = strike_output
+
+    return {
+        "generated_at": datetime.now(IST).isoformat(),
+        "expiry": nearest_expiry,
+        "underlying_ltp": underlying_ltp,
+        "strikes": strikes
+    }
+
+
+# ============================================================
+# MAIN OUTPUT
+# ============================================================
+
 output = {
     "status": "LIVE",
     "source": "DHAN",
@@ -155,6 +357,10 @@ output = {
     "markets": {}
 }
 
+
+# ============================================================
+# MARKET STRUCTURE DATA
+# ============================================================
 
 for name, security_id in INSTRUMENTS.items():
 
@@ -172,6 +378,25 @@ for name, security_id in INSTRUMENTS.items():
     }
 
 
+# ============================================================
+# BANK NIFTY LIVE OPTION CHAIN
+# ============================================================
+
+print("Fetching BANKNIFTY option expiries...")
+
+banknifty_option_chain = build_option_chain(
+    INSTRUMENTS["BANKNIFTY"]
+)
+
+output["markets"]["BANKNIFTY"]["option_chain"] = (
+    banknifty_option_chain
+)
+
+
+# ============================================================
+# WRITE LIVE BRIDGE
+# ============================================================
+
 with open("market-live.json", "w") as file:
     json.dump(output, file, indent=2)
 
@@ -179,3 +404,7 @@ with open("market-live.json", "w") as file:
 print("DHAN LIVE MARKET DATA GENERATED")
 print("NIFTY + BANKNIFTY")
 print("TIMEFRAMES: 5m / 15m / 60m / 1D / 1W")
+print(
+    "BANKNIFTY OPTION CHAIN:",
+    banknifty_option_chain["expiry"]
+)
