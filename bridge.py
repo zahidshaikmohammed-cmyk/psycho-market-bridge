@@ -493,7 +493,7 @@ def write_json(filename, data):
         json.dump(
             data,
             file,
-            separators=(",", ":"),
+indent=2,
             ensure_ascii=False
         )
 
