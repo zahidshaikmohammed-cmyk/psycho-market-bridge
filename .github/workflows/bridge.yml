@@ -20,6 +20,9 @@ jobs:
           python-version: "3.12"
 
       - name: Run bridge
+        env:
+          DHAN_ACCESS_TOKEN: ${{ secrets.DHAN_ACCESS_TOKEN }}
+          DHAN_CLIENT_ID: ${{ secrets.DHAN_CLIENT_ID }}
         run: python bridge.py
 
       - name: Commit generated data
