@@ -829,3 +829,31 @@ def banknifty_live():
 @app.route("/banknifty-option-chain")
 def banknifty_option_chain():
     return send_file("banknifty-option-chain.json")
+
+
+@app.route("/phase2-live")
+def phase2_live():
+    files = [
+        ("NIFTY LIVE", "nifty-live.json"),
+        ("NIFTY OPTION CHAIN", "nifty-option-chain.json"),
+        ("BANKNIFTY LIVE", "banknifty-live.json"),
+        ("BANKNIFTY OPTION CHAIN", "banknifty-option-chain.json"),
+    ]
+
+    output = []
+
+    for title, filename in files:
+        output.append("\n" + "=" * 80)
+        output.append(title)
+        output.append("=" * 80)
+
+        try:
+            with open(filename, "r", encoding="utf-8") as f:
+                data = json.load(f)
+
+            output.append(json.dumps(data, indent=2, ensure_ascii=False))
+
+        except Exception as e:
+            output.append(f"ERROR READING {filename}: {e}")
+
+    return "\n".join(output), 200, {"Content-Type": "text/plain; charset=utf-8"}
