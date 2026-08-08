@@ -1,0 +1,33 @@
+name: Historical Downloader 1Y
+
+on:
+  workflow_dispatch:
+
+jobs:
+  download:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Run one-year historical downloader
+        env:
+          DHAN_ACCESS_TOKEN: ${{ secrets.DHAN_ACCESS_TOKEN }}
+          HISTORICAL_START_DATE: "2025-08-09"
+          HISTORICAL_END_DATE: "2026-08-09"
+          HISTORICAL_OUTPUT_DIR: "historical_1y"
+        run: |
+          python historical_downloader.py
+
+      - name: Upload one-year historical data
+        uses: actions/upload-artifact@v4
+        with:
+          name: historical-5m-1y
+          path: historical_1y/
+          if-no-files-found: error
