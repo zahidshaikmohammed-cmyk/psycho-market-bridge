@@ -6,6 +6,7 @@ import time
 from datetime import date, datetime, timedelta
 from pathlib import Path
 from urllib.request import Request, urlopen
+from zoneinfo import ZoneInfo
 
 # ============================================================
 # PSYCHO MARKET BRIDGE
@@ -15,13 +16,11 @@ from urllib.request import Request, urlopen
 # Download immutable historical 5-minute index candles from DHAN
 # for research. This component is deliberately separate from
 # bridge.py and MUST NOT modify the live Phase-2 pipeline.
-#
-# DHAN current V2 historical intraday limit:
-# maximum 90 calendar days per request.
 # ============================================================
 
 DHAN_URL = "https://api.dhan.co/v2/charts/intraday"
 TOKEN = os.environ["DHAN_ACCESS_TOKEN"]
+IST = ZoneInfo("Asia/Kolkata")
 
 INSTRUMENTS = {
     "NIFTY": {"security_id": "13"},
@@ -40,7 +39,7 @@ def parse_date(value: str) -> date:
 
 
 def request_chunk(security_id: str, start: date, end: date) -> dict:
-    # DHAN's toDate is non-inclusive.
+    # DHAN's toDate is treated as non-inclusive by the downloader.
     payload = {
         "securityId": security_id,
         "exchangeSegment": "IDX_I",
@@ -87,7 +86,9 @@ def normalize(raw: dict):
         except (TypeError, ValueError):
             continue
 
-        dt = datetime.fromtimestamp(ts).astimezone()
+        # DHAN timestamps are epoch seconds. Convert explicitly to IST;
+        # never depend on the host machine's local timezone.
+        dt = datetime.fromtimestamp(ts, tz=IST)
         rows.append({
             "timestamp": ts,
             "datetime": dt.isoformat(),
@@ -104,8 +105,7 @@ def normalize(raw: dict):
 
 
 def download_instrument(name: str, start: date, end: date):
-    # A dictionary keyed by timestamp gives deterministic de-duplication
-    # when adjacent chunks overlap at a boundary.
+    # Key by timestamp for deterministic de-duplication at chunk boundaries.
     candles = {}
     chunk_start = start
 
@@ -123,13 +123,15 @@ def download_instrument(name: str, start: date, end: date):
         for row in rows:
             candles[row["timestamp"]] = row
 
-        print(f"{name}: received {len(rows)} candles; unique={len(candles)}", flush=True)
+        print(
+            f"{name}: received {len(rows)} candles; unique={len(candles)}",
+            flush=True,
+        )
         chunk_start = chunk_end
         if chunk_start < end:
             time.sleep(REQUEST_DELAY_SECONDS)
 
-    ordered = [candles[key] for key in sorted(candles)]
-    return ordered
+    return [candles[key] for key in sorted(candles)]
 
 
 def write_gzip_csv(name: str, rows, start: date, end: date):
@@ -138,7 +140,7 @@ def write_gzip_csv(name: str, rows, start: date, end: date):
 
     fields = [
         "timestamp", "datetime", "date", "time",
-        "open", "high", "low", "close", "volume"
+        "open", "high", "low", "close", "volume",
     ]
 
     with gzip.open(filename, "wt", newline="", encoding="utf-8") as file:
@@ -151,7 +153,9 @@ def write_gzip_csv(name: str, rows, start: date, end: date):
 
 
 def main():
-    end = parse_date(os.environ.get("HISTORICAL_END_DATE", date.today().isoformat()))
+    end = parse_date(
+        os.environ.get("HISTORICAL_END_DATE", date.today().isoformat())
+    )
     start = parse_date(
         os.environ.get(
             "HISTORICAL_START_DATE",
@@ -160,13 +164,21 @@ def main():
     )
 
     if start >= end:
-        raise ValueError("HISTORICAL_START_DATE must be earlier than HISTORICAL_END_DATE")
+        raise ValueError(
+            "HISTORICAL_START_DATE must be earlier than HISTORICAL_END_DATE"
+        )
 
-    print(f"Historical research download: {start} -> {end} (end exclusive)", flush=True)
-    print(f"Timeframe: {INTERVAL} minute | max API chunk: {MAX_CHUNK_DAYS} days", flush=True)
+    print(
+        f"Historical research download: {start} -> {end} (end exclusive)",
+        flush=True,
+    )
+    print(
+        f"Timeframe: {INTERVAL} minute | max API chunk: {MAX_CHUNK_DAYS} days",
+        flush=True,
+    )
 
     manifest = {
-        "generated_at_utc": datetime.utcnow().isoformat() + "Z",
+        "generated_at_utc": datetime.now(tz=ZoneInfo("UTC")).isoformat(),
         "start_date": start.isoformat(),
         "end_date_exclusive": end.isoformat(),
         "timeframe": "5M",
