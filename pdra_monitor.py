@@ -117,6 +117,10 @@ def session_state(now):
     return {"status": "MARKET OPEN — PDRA ACTIVE", "detail": "Current 5-minute structure is being evaluated."}
 
 
+def closed_card(name, now, status):
+    return {"name": name, "generated": now.strftime("%d %b %Y %H:%M:%S IST"), "pdh": "—", "pdl": "—", "open": "—", "atr": "—", "threshold": "—", "long_trigger": "—", "short_trigger": "—", "status": status, "status_class": "blue", "displacement": "NOT ACTIVE", "acceptance": "NOT ACTIVE", "direction": "—", "entry": "—", "sl": "—", "tp": "—", "bars": "—"}
+
+
 def analyse(name, path, now):
     raw = get_json(path)
     candles = find_candles(raw)
@@ -135,19 +139,13 @@ def analyse(name, path, now):
     out = {"name": name, "generated": now.strftime("%d %b %Y %H:%M:%S IST"), "pdh": fmt(pdh), "pdl": fmt(pdl), "open": fmt(op), "atr": fmt(a), "threshold": fmt(threshold), "long_trigger": fmt(pdh + threshold if pdh is not None and threshold is not None else None), "short_trigger": fmt(pdl - threshold if pdl is not None and threshold is not None else None), "status": "WAITING", "status_class": "yellow", "displacement": "WAITING", "acceptance": "WAITING", "direction": "—", "entry": "—", "sl": "—", "tp": "—", "bars": "—"}
 
     if now.weekday() >= 5:
-        out["status"] = "MARKET CLOSED"
-        out["status_class"] = "blue"
-        return out
+        return closed_card(name, now, "MARKET CLOSED — WEEKEND")
     if now.time() < MARKET_OPEN:
-        out["status"] = "MARKET CLOSED — PRE-OPEN"
-        out["status_class"] = "blue"
-        return out
+        return closed_card(name, now, "MARKET CLOSED — PRE-OPEN")
+    if now.time() > MARKET_CLOSE:
+        return closed_card(name, now, "MARKET CLOSED — SESSION COMPLETE")
     if now.time() < ELIGIBILITY:
         out["status"] = "PDRA STARTS 09:30"
-        return out
-    if now.time() > MARKET_CLOSE:
-        out["status"] = "MARKET CLOSED — SESSION COMPLETE"
-        out["status_class"] = "blue"
         return out
 
     if not today or pdh is None or pdl is None or a is None:
@@ -209,19 +207,31 @@ def analyse(name, path, now):
 
 
 def error_card(name, now, error):
-    return {"name": name, "generated": now.strftime("%d %b %Y %H:%M:%S IST"), "pdh": "—", "pdl": "—", "open": "—", "atr": "—", "threshold": "—", "long_trigger": "—", "short_trigger": "—", "status": "DATA ERROR", "status_class": "red", "displacement": str(error), "acceptance": "—", "direction": "—", "entry": "—", "sl": "—", "tp": "—", "bars": "—"}
+    return {"name": name, "generated": now.strftime("%d %b %Y %H:%M:%S IST"), "pdh": "—", "pdl": "—", "open": "—", "atr": "—", "threshold": "—", "long_trigger": "—", "short_trigger": "—", "status": "BRIDGE UNAVAILABLE", "status_class": "yellow", "displacement": "Bridge returned no live data", "acceptance": "—", "direction": "—", "entry": "—", "sl": "—", "tp": "—", "bars": "—"}
 
 
 @app.route("/")
 def home():
     now = datetime.now(IST)
+    session = session_state(now)
     items = []
-    for name, path in (("NIFTY", "/nifty-live"), ("BANK NIFTY", "/banknifty-live")):
-        try:
-            items.append(analyse(name, path, now))
-        except Exception as e:
-            items.append(error_card(name, now, str(e)))
-    return render_template_string(HTML, instruments=items, session=session_state(now))
+
+    # Do not call the live bridge while the market is closed. A closed market is
+    # a valid state, not a data error. This also prevents the bridge's intentional
+    # 503 response outside its live window from being displayed as DATA ERROR.
+    market_closed = now.weekday() >= 5 or now.time() < MARKET_OPEN or now.time() > MARKET_CLOSE
+    if market_closed:
+        status = session["status"]
+        for name in ("NIFTY", "BANK NIFTY"):
+            items.append(closed_card(name, now, status))
+    else:
+        for name, path in (("NIFTY", "/nifty-live"), ("BANK NIFTY", "/banknifty-live")):
+            try:
+                items.append(analyse(name, path, now))
+            except Exception as e:
+                items.append(error_card(name, now, str(e)))
+
+    return render_template_string(HTML, instruments=items, session=session)
 
 
 @app.route("/health")
