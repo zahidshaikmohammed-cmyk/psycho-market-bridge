@@ -164,7 +164,7 @@ def audit_rows(name: str, rows):
         "invalid_ohlc": 0,
         "timestamp_errors": 0,
         "session_gap_count": 0,
-        "opening_candle_flags": [],
+        "opening_candle_anomalies": [],
         "sessions": [],
         "overall_status": "PASS",
     }
@@ -226,9 +226,10 @@ def audit_rows(name: str, rows):
             "gaps_gt_5m": gaps,
         }
 
-        # The opening timestamp is a research flag, not a data mutation.
+        # Opening timestamp is recorded as a research anomaly only.
+        # It does NOT by itself change overall_status.
         if first_dt.time() != MARKET_OPEN:
-            report["opening_candle_flags"].append({
+            report["opening_candle_anomalies"].append({
                 "date": session_date.isoformat(),
                 "expected": MARKET_OPEN.strftime("%H:%M:%S"),
                 "actual": first_dt.strftime("%H:%M:%S"),
@@ -244,7 +245,9 @@ def audit_rows(name: str, rows):
         + report["session_gap_count"]
     )
 
-    if hard_failures > 0 or report["opening_candle_flags"]:
+    # Opening-candle anomalies are explicitly non-fatal research flags.
+    # Only structural/data-integrity failures produce FLAG status.
+    if hard_failures > 0:
         report["overall_status"] = "FLAG"
 
     return report
@@ -317,6 +320,12 @@ def main():
             f"{name}: QUALITY={quality_reports[name]['overall_status']}",
             flush=True,
         )
+        if quality_reports[name]["opening_candle_anomalies"]:
+            print(
+                f"{name}: OPENING_CANDLE_ANOMALY="
+                f"{len(quality_reports[name]['opening_candle_anomalies'])}",
+                flush=True,
+            )
 
     manifest_path = OUTPUT_DIR / "manifest.json"
     manifest_path.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
