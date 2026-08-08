@@ -1,0 +1,32 @@
+name: Historical Downloader Test
+
+on:
+  workflow_dispatch:
+
+jobs:
+  download:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Run historical downloader
+        env:
+          DHAN_ACCESS_TOKEN: ${{ secrets.DHAN_ACCESS_TOKEN }}
+          HISTORICAL_START_DATE: "2026-07-27"
+          HISTORICAL_END_DATE: "2026-08-08"
+          HISTORICAL_OUTPUT_DIR: "historical_test"
+        run: |
+          python historical_downloader.py
+
+      - name: Upload historical test data
+        uses: actions/upload-artifact@v4
+        with:
+          name: historical-5m-test
+          path: historical_test/
