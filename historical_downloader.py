@@ -3,7 +3,7 @@ import gzip
 import json
 import os
 import time
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, time as dt_time
 from pathlib import Path
 from urllib.request import Request, urlopen
 from zoneinfo import ZoneInfo
@@ -21,6 +21,7 @@ from zoneinfo import ZoneInfo
 DHAN_URL = "https://api.dhan.co/v2/charts/intraday"
 TOKEN = os.environ["DHAN_ACCESS_TOKEN"]
 IST = ZoneInfo("Asia/Kolkata")
+UTC = ZoneInfo("UTC")
 
 INSTRUMENTS = {
     "NIFTY": {"security_id": "13"},
@@ -33,13 +34,15 @@ DEFAULT_DAYS = 365
 OUTPUT_DIR = Path(os.environ.get("HISTORICAL_OUTPUT_DIR", "historical_data"))
 REQUEST_DELAY_SECONDS = float(os.environ.get("HISTORICAL_REQUEST_DELAY", "0.25"))
 
+MARKET_OPEN = dt_time(9, 15)
+MARKET_CLOSE = dt_time(15, 40)
+
 
 def parse_date(value: str) -> date:
     return datetime.strptime(value, "%Y-%m-%d").date()
 
 
 def request_chunk(security_id: str, start: date, end: date) -> dict:
-    # DHAN's toDate is treated as non-inclusive by the downloader.
     payload = {
         "securityId": security_id,
         "exchangeSegment": "IDX_I",
@@ -86,8 +89,6 @@ def normalize(raw: dict):
         except (TypeError, ValueError):
             continue
 
-        # DHAN timestamps are epoch seconds. Convert explicitly to IST;
-        # never depend on the host machine's local timezone.
         dt = datetime.fromtimestamp(ts, tz=IST)
         rows.append({
             "timestamp": ts,
@@ -105,7 +106,6 @@ def normalize(raw: dict):
 
 
 def download_instrument(name: str, start: date, end: date):
-    # Key by timestamp for deterministic de-duplication at chunk boundaries.
     candles = {}
     chunk_start = start
 
@@ -152,6 +152,122 @@ def write_gzip_csv(name: str, rows, start: date, end: date):
     return filename
 
 
+def audit_rows(name: str, rows):
+    """Create a deterministic quality report without changing raw data."""
+    report = {
+        "instrument": name,
+        "timeframe": "5M",
+        "total_candles": len(rows),
+        "trading_sessions": 0,
+        "duplicate_timestamps": 0,
+        "missing_ohlcv": 0,
+        "invalid_ohlc": 0,
+        "timestamp_errors": 0,
+        "session_gap_count": 0,
+        "opening_candle_flags": [],
+        "sessions": [],
+        "overall_status": "PASS",
+    }
+
+    seen = set()
+    by_date = {}
+
+    for row in rows:
+        try:
+            ts = int(row["timestamp"])
+            dt = datetime.fromtimestamp(ts, tz=IST)
+            if row.get("datetime") != dt.isoformat():
+                report["timestamp_errors"] += 1
+        except Exception:
+            report["timestamp_errors"] += 1
+            continue
+
+        if ts in seen:
+            report["duplicate_timestamps"] += 1
+        seen.add(ts)
+
+        values = [row.get(k) for k in ("open", "high", "low", "close", "volume")]
+        if any(v in (None, "") for v in values):
+            report["missing_ohlcv"] += 1
+        else:
+            try:
+                o, h, l, c = map(float, values[:4])
+                if h < max(o, c) or l > min(o, c) or h < l:
+                    report["invalid_ohlc"] += 1
+            except (TypeError, ValueError):
+                report["invalid_ohlc"] += 1
+
+        by_date.setdefault(dt.date(), []).append((dt, row))
+
+    report["trading_sessions"] = len(by_date)
+
+    for session_date in sorted(by_date):
+        entries = sorted(by_date[session_date], key=lambda x: x[0])
+        first_dt = entries[0][0]
+        last_dt = entries[-1][0]
+        gaps = []
+
+        for (prev_dt, _), (curr_dt, _) in zip(entries, entries[1:]):
+            minutes = int((curr_dt - prev_dt).total_seconds() / 60)
+            if minutes > 5:
+                gaps.append({
+                    "from": prev_dt.strftime("%H:%M:%S"),
+                    "to": curr_dt.strftime("%H:%M:%S"),
+                    "gap_minutes": minutes,
+                })
+
+        report["session_gap_count"] += len(gaps)
+
+        session_record = {
+            "date": session_date.isoformat(),
+            "candles": len(entries),
+            "first_candle": first_dt.strftime("%H:%M:%S"),
+            "last_candle": last_dt.strftime("%H:%M:%S"),
+            "gaps_gt_5m": gaps,
+        }
+
+        # The opening timestamp is a research flag, not a data mutation.
+        if first_dt.time() != MARKET_OPEN:
+            report["opening_candle_flags"].append({
+                "date": session_date.isoformat(),
+                "expected": MARKET_OPEN.strftime("%H:%M:%S"),
+                "actual": first_dt.strftime("%H:%M:%S"),
+            })
+
+        report["sessions"].append(session_record)
+
+    hard_failures = (
+        report["duplicate_timestamps"]
+        + report["missing_ohlcv"]
+        + report["invalid_ohlc"]
+        + report["timestamp_errors"]
+        + report["session_gap_count"]
+    )
+
+    if hard_failures > 0 or report["opening_candle_flags"]:
+        report["overall_status"] = "FLAG"
+
+    return report
+
+
+def write_quality_report(reports, start: date, end: date):
+    report_path = OUTPUT_DIR / f"quality_report_{start}_{end}.json"
+    payload = {
+        "generated_at_utc": datetime.now(tz=UTC).isoformat(),
+        "start_date": start.isoformat(),
+        "end_date_exclusive": end.isoformat(),
+        "timeframe": "5M",
+        "source": "DHAN /v2/charts/intraday",
+        "reports": reports,
+        "overall_status": "PASS" if all(
+            r["overall_status"] == "PASS" for r in reports.values()
+        ) else "FLAG",
+    }
+    report_path.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+    print(f"WROTE {report_path}", flush=True)
+    return report_path
+
+
 def main():
     end = parse_date(
         os.environ.get("HISTORICAL_END_DATE", date.today().isoformat())
@@ -178,26 +294,35 @@ def main():
     )
 
     manifest = {
-        "generated_at_utc": datetime.now(tz=ZoneInfo("UTC")).isoformat(),
+        "generated_at_utc": datetime.now(tz=UTC).isoformat(),
         "start_date": start.isoformat(),
         "end_date_exclusive": end.isoformat(),
         "timeframe": "5M",
         "source": "DHAN /v2/charts/intraday",
         "instruments": {},
     }
+    quality_reports = {}
 
     for name in INSTRUMENTS:
         rows = download_instrument(name, start, end)
         output = write_gzip_csv(name, rows, start, end)
+        quality_reports[name] = audit_rows(name, rows)
         manifest["instruments"][name] = {
             "security_id": INSTRUMENTS[name]["security_id"],
             "candles": len(rows),
             "file": str(output),
+            "quality_status": quality_reports[name]["overall_status"],
         }
+        print(
+            f"{name}: QUALITY={quality_reports[name]['overall_status']}",
+            flush=True,
+        )
 
     manifest_path = OUTPUT_DIR / "manifest.json"
     manifest_path.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
     print(f"WROTE {manifest_path}", flush=True)
+
+    write_quality_report(quality_reports, start, end)
 
 
 if __name__ == "__main__":
