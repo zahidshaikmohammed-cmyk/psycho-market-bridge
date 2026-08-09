@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: psycho-hourly-pattern-engine
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements-hourly-pattern-engine.txt
+    startCommand: python hourly_pattern_signal_engine.py
+    envVars:
+      - key: DHAN_CLIENT_ID
+        sync: false
+      - key: DHAN_ACCESS_TOKEN
+        sync: false
