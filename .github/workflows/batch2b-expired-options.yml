@@ -2,6 +2,15 @@ name: PSYCHO Batch 2B Expired Options Microstructure Acquisition
 
 on:
   workflow_dispatch:
+    inputs:
+      mode:
+        description: 'PILOT validates API/data shape; FULL runs the research acquisition'
+        required: true
+        default: PILOT
+        type: choice
+        options:
+          - PILOT
+          - FULL
   push:
     branches: [main]
 
@@ -15,6 +24,7 @@ jobs:
       DHAN_CLIENT_ID: ${{ secrets.DHAN_CLIENT_ID }}
       BATCH2B_FROM: '2025-08-11'
       BATCH2B_TO: '2026-08-09'
+      BATCH2B_MODE: ${{ inputs.mode || 'PILOT' }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -34,6 +44,6 @@ jobs:
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: psycho-batch2b-expired-options
+          name: psycho-batch2b-expired-options-${{ inputs.mode || 'PILOT' }}
           path: research_data/batch2b_expired_options/
           retention-days: 30
