@@ -1,8 +1,15 @@
 """PSYCHO Batch 2A — Continuous Futures Participation (daily)
 
 Dhan does not expose expired index-futures intraday contracts. Batch 2A therefore
-uses Dhan's continuous near-month futures representation at DAILY timeframe.
+uses Dhan's continuous/current near-month futures representation at DAILY timeframe.
 The dataset is intended for regime/participation context, not intraday backtests.
+
+Important validation policy:
+- Preserve the raw Dhan response unchanged.
+- Normalize Dhan's `open_interest` field to canonical `oi` when present.
+- Do not discard an entire acquisition because of an isolated malformed OHLC row.
+  Such rows are quarantined and reported explicitly.
+- The validated dataset contains only structurally valid rows.
 """
 import os, io, json
 from pathlib import Path
@@ -29,9 +36,30 @@ def post(path, payload):
     return data
 
 
+def normalize_response(data):
+    """Normalize known Dhan field aliases without changing the raw response."""
+    if not isinstance(data, dict):
+        raise RuntimeError("Dhan historical response is not a JSON object")
+    out = dict(data)
+    if "oi" not in out and "open_interest" in out:
+        out["oi"] = out["open_interest"]
+    return out
+
+
+def find_bad_ohlc_rows(data):
+    bad = []
+    ts = data.get("timestamp", [])
+    for i in range(len(ts)):
+        try:
+            o, h, l, c = map(float, (data["open"][i], data["high"][i], data["low"][i], data["close"][i]))
+            if h < max(o, c) or l > min(o, c) or h < l:
+                bad.append({"index": i, "timestamp": ts[i], "open": o, "high": h, "low": l, "close": c, "reason": "OHLC relationship invalid"})
+        except Exception as exc:
+            bad.append({"index": i, "timestamp": ts[i] if i < len(ts) else None, "reason": f"non-numeric OHLC: {exc}"})
+    return bad
+
+
 def validate(data):
-    # OHLCV is mandatory for Batch 2A. OI is retained when Dhan supplies it,
-    # but is optional because continuous daily responses may omit it.
     required = {"timestamp", "open", "high", "low", "close", "volume"}
     missing = required - set(data)
     if missing:
@@ -41,13 +69,11 @@ def validate(data):
     required_lengths = {k: len(data[k]) for k in required}
     if len(set(required_lengths.values())) != 1:
         return {"ok": False, "reason": "required array length mismatch", "lengths": required_lengths}
-
     if n == 0:
         return {"ok": False, "reason": "zero rows"}
 
-    # Optional fields must align if present.
     optional_lengths = {}
-    for k in ("oi",):
+    for k in ("oi", "open_interest"):
         if k in data:
             optional_lengths[k] = len(data[k])
             if len(data[k]) != n:
@@ -56,27 +82,36 @@ def validate(data):
     ts = [int(float(x)) for x in data["timestamp"]]
     dup = n - len(set(ts))
     ordered = all(ts[i] < ts[i + 1] for i in range(n - 1))
-
-    bad = 0
-    for i in range(n):
-        try:
-            o, h, l, c = map(float, (data["open"][i], data["high"][i], data["low"][i], data["close"][i]))
-            if h < max(o, c) or l > min(o, c) or h < l:
-                bad += 1
-        except Exception:
-            bad += 1
+    bad_rows = find_bad_ohlc_rows(data)
 
     return {
-        "ok": dup == 0 and ordered and bad == 0,
+        "ok": dup == 0 and ordered and n - len(bad_rows) > 0,
         "rows": n,
+        "valid_rows": n - len(bad_rows),
+        "quarantined_bad_ohlc_rows": len(bad_rows),
         "duplicates": dup,
         "ordered": ordered,
-        "bad_ohlc": bad,
         "first_epoch": ts[0],
         "last_epoch": ts[-1],
         "fields": sorted(data.keys()),
-        "oi_present": "oi" in data,
+        "oi_present": "oi" in data or "open_interest" in data,
+        "bad_ohlc_rows": bad_rows,
     }
+
+
+def clean_valid_rows(data):
+    """Return a structurally valid dataset while retaining raw data separately."""
+    bad_indices = {x["index"] for x in find_bad_ohlc_rows(data)}
+    n = len(data["timestamp"])
+    cleaned = {}
+    for key, values in data.items():
+        if isinstance(values, list) and len(values) == n:
+            cleaned[key] = [v for i, v in enumerate(values) if i not in bad_indices]
+        else:
+            cleaned[key] = values
+    if "oi" not in cleaned and "open_interest" in cleaned:
+        cleaned["oi"] = cleaned["open_interest"]
+    return cleaned
 
 
 def resolve_current_near(df, symbol):
@@ -111,14 +146,39 @@ def main():
         sid = str(row["SEM_SMST_SECURITY_ID"])
         expiry = str(pd.Timestamp(row["expiry"]).date())
         payload = {"securityId": sid, "exchangeSegment": "NSE_FNO", "instrument": "FUTIDX", "expiryCode": 0, "oi": True, "fromDate": FROM, "toDate": TO}
-        data = post("/charts/historical", payload)
-        raw = data.get("data", data) if isinstance(data, dict) else data
-        validation = validate(raw)
-        out = ROOT / f"{symbol}_continuous_daily.json"
-        out.write_text(json.dumps({"symbol": symbol, "security_id": sid, "near_contract_expiry_used": expiry, "payload": payload, "validation": validation, "data": raw}, indent=2))
-        manifest["datasets"][symbol] = {"security_id": sid, "near_contract_expiry_used": expiry, "validation": validation, "file": out.name}
+        response = post("/charts/historical", payload)
+        raw = response.get("data", response) if isinstance(response, dict) else response
+        raw_path = ROOT / f"{symbol}_continuous_daily_raw.json"
+        raw_path.write_text(json.dumps(raw, indent=2))
+
+        normalized = normalize_response(raw)
+        validation = validate(normalized)
         if not validation.get("ok"):
-            raise RuntimeError(f"{symbol} continuous daily validation failed: {validation}")
+            raise RuntimeError(f"{symbol} continuous daily structural validation failed: {validation}")
+
+        cleaned = clean_valid_rows(normalized)
+        cleaned_validation = validate(cleaned)
+        if not cleaned_validation.get("ok"):
+            raise RuntimeError(f"{symbol} cleaned continuous daily validation failed: {cleaned_validation}")
+
+        out = ROOT / f"{symbol}_continuous_daily.json"
+        out.write_text(json.dumps({
+            "symbol": symbol,
+            "security_id": sid,
+            "near_contract_expiry_used": expiry,
+            "payload": payload,
+            "raw_validation": validation,
+            "data": cleaned,
+        }, indent=2))
+
+        manifest["datasets"][symbol] = {
+            "security_id": sid,
+            "near_contract_expiry_used": expiry,
+            "raw_validation": validation,
+            "cleaned_validation": cleaned_validation,
+            "raw_file": raw_path.name,
+            "file": out.name,
+        }
 
     manifest["status"] = "VALIDATED"
     (ROOT / "batch2a_manifest.json").write_text(json.dumps(manifest, indent=2))
