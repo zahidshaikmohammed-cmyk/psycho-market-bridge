@@ -1,0 +1,35 @@
+name: PSYCHO Batch 2A Continuous Futures Acquisition
+
+on:
+  workflow_dispatch:
+
+jobs:
+  batch2a:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      DHAN_ACCESS_TOKEN: ${{ secrets.DHAN_ACCESS_TOKEN }}
+      DHAN_CLIENT_ID: ${{ secrets.DHAN_CLIENT_ID }}
+      BATCH2A_FROM: '2025-08-11'
+      BATCH2A_TO: '2026-08-09'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: pip install requests pandas
+      - name: Verify Dhan secrets exist
+        run: |
+          test -n "$DHAN_CLIENT_ID"
+          test -n "$DHAN_ACCESS_TOKEN"
+      - name: Run Batch 2A acquisition
+        run: python batch2a_continuous_futures_acquisition.py
+      - name: Upload validated Batch 2A data
+        uses: actions/upload-artifact@v4
+        with:
+          name: psycho-batch2a-continuous-futures
+          path: research_data/batch2a_continuous_futures/
+          retention-days: 30
