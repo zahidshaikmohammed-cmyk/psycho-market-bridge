@@ -24,7 +24,7 @@ jobs:
       DHAN_CLIENT_ID: ${{ secrets.DHAN_CLIENT_ID }}
       BATCH2B_FROM: '2025-08-11'
       BATCH2B_TO: '2026-08-09'
-      BATCH2B_MODE: ${{ inputs.mode || 'PILOT' }}
+      BATCH2B_MODE: FULL
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -44,6 +44,6 @@ jobs:
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: psycho-batch2b-expired-options-${{ inputs.mode || 'PILOT' }}
+          name: psycho-batch2b-expired-options-FULL
           path: research_data/batch2b_expired_options/
           retention-days: 30
