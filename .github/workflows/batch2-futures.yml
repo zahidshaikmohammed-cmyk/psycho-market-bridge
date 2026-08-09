@@ -1,0 +1,35 @@
+name: PSYCHO Batch 2 Futures Participation Acquisition
+
+on:
+  workflow_dispatch:
+
+jobs:
+  batch2:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    env:
+      DHAN_ACCESS_TOKEN: ${{ secrets.DHAN_ACCESS_TOKEN }}
+      DHAN_CLIENT_ID: ${{ secrets.DHAN_CLIENT_ID }}
+      BATCH2_FROM: '2025-08-11 09:15:00'
+      BATCH2_TO: '2026-08-08 15:40:00'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install dependencies
+        run: pip install requests pandas
+      - name: Verify Dhan secrets exist
+        run: |
+          test -n "$DHAN_CLIENT_ID"
+          test -n "$DHAN_ACCESS_TOKEN"
+      - name: Run Batch 2 acquisition
+        run: python batch2_futures_acquisition.py
+      - name: Upload Batch 2 data
+        uses: actions/upload-artifact@v4
+        with:
+          name: psycho-batch2-futures
+          path: research_data/batch2_futures/
+          retention-days: 30
