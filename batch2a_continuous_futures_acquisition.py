@@ -30,28 +30,53 @@ def post(path, payload):
 
 
 def validate(data):
-    required = {"timestamp", "open", "high", "low", "close", "volume", "oi"}
+    # OHLCV is mandatory for Batch 2A. OI is retained when Dhan supplies it,
+    # but is optional because continuous daily responses may omit it.
+    required = {"timestamp", "open", "high", "low", "close", "volume"}
     missing = required - set(data)
     if missing:
         return {"ok": False, "reason": f"missing fields: {sorted(missing)}"}
+
     n = len(data["timestamp"])
-    lengths = {k: len(data[k]) for k in required}
-    if len(set(lengths.values())) != 1:
-        return {"ok": False, "reason": "array length mismatch", "lengths": lengths}
+    required_lengths = {k: len(data[k]) for k in required}
+    if len(set(required_lengths.values())) != 1:
+        return {"ok": False, "reason": "required array length mismatch", "lengths": required_lengths}
+
     if n == 0:
         return {"ok": False, "reason": "zero rows"}
+
+    # Optional fields must align if present.
+    optional_lengths = {}
+    for k in ("oi",):
+        if k in data:
+            optional_lengths[k] = len(data[k])
+            if len(data[k]) != n:
+                return {"ok": False, "reason": f"optional field length mismatch: {k}", "lengths": {**required_lengths, **optional_lengths}}
+
     ts = [int(float(x)) for x in data["timestamp"]]
     dup = n - len(set(ts))
-    ordered = all(ts[i] < ts[i+1] for i in range(n-1))
+    ordered = all(ts[i] < ts[i + 1] for i in range(n - 1))
+
     bad = 0
     for i in range(n):
         try:
-            o,h,l,c = map(float, (data["open"][i], data["high"][i], data["low"][i], data["close"][i]))
-            if h < max(o,c) or l > min(o,c) or h < l:
+            o, h, l, c = map(float, (data["open"][i], data["high"][i], data["low"][i], data["close"][i]))
+            if h < max(o, c) or l > min(o, c) or h < l:
                 bad += 1
         except Exception:
             bad += 1
-    return {"ok": dup == 0 and ordered and bad == 0, "rows": n, "duplicates": dup, "ordered": ordered, "bad_ohlc": bad, "first_epoch": ts[0], "last_epoch": ts[-1], "fields": sorted(data.keys())}
+
+    return {
+        "ok": dup == 0 and ordered and bad == 0,
+        "rows": n,
+        "duplicates": dup,
+        "ordered": ordered,
+        "bad_ohlc": bad,
+        "first_epoch": ts[0],
+        "last_epoch": ts[-1],
+        "fields": sorted(data.keys()),
+        "oi_present": "oi" in data,
+    }
 
 
 def resolve_current_near(df, symbol):
@@ -75,7 +100,7 @@ def main():
     r.raise_for_status()
     (ROOT / "dhan_scrip_master.csv").write_text(r.text)
     df = pd.read_csv(io.StringIO(r.text), low_memory=False)
-    needed = ["SEM_EXM_EXCH_ID","SEM_SEGMENT","SEM_SMST_SECURITY_ID","SEM_INSTRUMENT_NAME","SEM_EXPIRY_DATE","SEM_TRADING_SYMBOL","SM_SYMBOL_NAME"]
+    needed = ["SEM_EXM_EXCH_ID", "SEM_SEGMENT", "SEM_SMST_SECURITY_ID", "SEM_INSTRUMENT_NAME", "SEM_EXPIRY_DATE", "SEM_TRADING_SYMBOL", "SM_SYMBOL_NAME"]
     missing = [c for c in needed if c not in df.columns]
     if missing:
         raise RuntimeError(f"Required master columns missing: {missing}")
