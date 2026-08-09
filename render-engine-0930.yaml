@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: psycho-engine-0930-1030
+    env: python
+    buildCommand: pip install -r requirements-engine-0930.txt
+    startCommand: python engine_0930_1030.py
+    envVars:
+      - key: DHAN_ACCESS_TOKEN
+        sync: false
+      - key: DHAN_CLIENT_ID
+        sync: false
