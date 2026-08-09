@@ -2,10 +2,10 @@
 
 Acquires historical 1-minute NIFTY/BANK NIFTY futures OHLCV + OI from Dhan's
 v2 historical intraday endpoint in <=90-day chunks. Security IDs are resolved
-from Dhan instrument master using configured futures contracts where possible.
+from Dhan instrument master using the master schema actually returned by Dhan.
 No live bridge/Hunter logic is modified.
 """
-import os, io, csv, json, time
+import os, io, json, time
 from pathlib import Path
 from datetime import datetime, timedelta
 import requests
@@ -43,7 +43,8 @@ def validate(rows):
         try:
             o,h,l,c = map(float, (r["open"],r["high"],r["low"],r["close"]))
             if h < max(o,c) or l > min(o,c) or h < l: bad_ohlc += 1
-        except Exception: bad_ohlc += 1
+        except Exception:
+            bad_ohlc += 1
     return {"ok": duplicates == 0 and ordered and bad_ohlc == 0, "rows": len(rows), "duplicates": duplicates, "ordered": ordered, "bad_ohlc": bad_ohlc, "first": ts[0], "last": ts[-1], "fields": sorted(rows[0])}
 
 
@@ -57,41 +58,50 @@ def download(security_id, label, out):
         if isinstance(data, dict) and "timestamp" in data:
             keys=[k for k in ("timestamp","open","high","low","close","volume","oi") if k in data]
             n=len(data["timestamp"])
-            for i in range(n): all_rows.append({k:data[k][i] for k in keys})
+            for i in range(n):
+                all_rows.append({k:data[k][i] for k in keys})
         cur=end
         time.sleep(0.2)
-    # de-duplicate by timestamp across chunks
     uniq={str(r["timestamp"]):r for r in all_rows}
     rows=[uniq[k] for k in sorted(uniq)]
     result=validate(rows)
-    (out).write_text(json.dumps({"instrument":label,"security_id":security_id,"validation":result,"rows":rows},indent=2))
+    out.write_text(json.dumps({"instrument":label,"security_id":security_id,"validation":result,"rows":rows},indent=2))
     return result
 
 
 def main():
-    # The exact front-month security IDs vary by expiry. This first acquisition
-    # intentionally resolves them from Dhan's instrument master before download.
+    # Dhan's current scrip-master schema uses SEM_* names. Resolve only NSE
+    # index futures for NIFTY/BANKNIFTY and keep the raw master for auditability.
     master_url="https://images.dhan.co/api-data/api-scrip-master.csv"
     r=requests.get(master_url,timeout=60)
     r.raise_for_status()
     text=r.text
-    # Keep the raw master locally for auditable resolution.
     (ROOT/"dhan_scrip_master.csv").write_text(text)
     import pandas as pd
     df=pd.read_csv(io.StringIO(text), low_memory=False)
-    # Normalize names seen in Dhan master; filter NSE index futures.
-    cols={c.lower():c for c in df.columns}
-    seg=cols.get("exchange_segment"); it=cols.get("instrument_type"); sym=cols.get("symbol")
-    sid=cols.get("security_id"); exp=cols.get("expiry_date")
-    if not all([seg,it,sym,sid,exp]): raise RuntimeError(f"Required master columns not found: {list(df.columns)}")
-    x=df[(df[seg].astype(str)=="NSE_FNO") & (df[it].astype(str).str.upper().isin(["FUTIDX","FUTIDX_NSE"]))]
-    x=x[x[sym].astype(str).str.upper().isin(["NIFTY","BANKNIFTY"])].copy()
+
+    seg="SEM_EXM_EXCH_ID"
+    it="SEM_INSTRUMENT_NAME"
+    sid="SEM_SMST_SECURITY_ID"
+    exp="SEM_EXPIRY_DATE"
+    sym="SM_SYMBOL_NAME"
+    needed=[seg,it,sid,exp,sym]
+    missing=[c for c in needed if c not in df.columns]
+    if missing:
+        raise RuntimeError(f"Required master columns not found: {missing}; available={list(df.columns)}")
+
+    x=df[(df[seg].astype(str).str.upper()=="NSE") &
+         (df[it].astype(str).str.upper().isin(["FUTIDX","FUTIDX_NSE"])) &
+         (df[sym].astype(str).str.upper().isin(["NIFTY","BANKNIFTY"]))].copy()
     x[exp]=pd.to_datetime(x[exp],errors="coerce")
     x=x[(x[exp]>=pd.Timestamp(FROM.date())) & (x[exp]<=pd.Timestamp(TO.date()))].sort_values([sym,exp])
+
+    if x.empty:
+        raise RuntimeError("No NIFTY/BANKNIFTY FUTIDX contracts found in the requested research window")
+
     manifest={"status":"STARTED","from":str(FROM),"to":str(TO),"datasets":{}}
     for symbol in ["NIFTY","BANKNIFTY"]:
         sub=x[x[sym].astype(str).str.upper()==symbol]
-        # One contract per expiry; download each expiry separately to avoid mixing contracts.
         files=[]
         for _,row in sub.iterrows():
             label=f"{symbol}_{pd.Timestamp(row[exp]).date()}"
@@ -102,8 +112,13 @@ def main():
             except Exception as e:
                 files.append({"label":label,"security_id":str(row[sid]),"error":str(e)})
         manifest["datasets"][symbol]=files
-    manifest["status"]="COMPLETED"
+
+    failed=[f for files in manifest["datasets"].values() for f in files if "error" in f or not f.get("validation",{}).get("ok",False)]
+    manifest["status"]="VALIDATED" if not failed else "COMPLETED_WITH_ERRORS"
+    manifest["failed_contracts"]=len(failed)
     (ROOT/"batch2_manifest.json").write_text(json.dumps(manifest,indent=2,default=str))
     print(json.dumps(manifest,indent=2,default=str))
+    if failed:
+        raise RuntimeError(f"Batch 2 validation failed for {len(failed)} contract(s)")
 
 if __name__=="__main__": main()
