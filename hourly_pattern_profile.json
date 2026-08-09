@@ -1,0 +1,22 @@
+{
+  "research_basis": "2025-08-11 through 2026-08-07, 5-minute underlying candles; six 60-minute NSE cash-session buckets from 09:30 to 15:30",
+  "outcome_definition": "breakout direction reaches +0.5 x compression range within next 6 completed 5-minute bars before -0.5 x compression range",
+  "profiles": {
+    "NIFTY": {
+      "09:30-10:30": {"pattern":"NR7","signals":249,"hit_rate":0.843},
+      "10:30-11:30": {"pattern":"NR7","signals":319,"hit_rate":0.821},
+      "11:30-12:30": {"pattern":"INSIDE_BAR","signals":204,"hit_rate":0.838},
+      "12:30-13:30": {"pattern":"NR4","signals":458,"hit_rate":0.836},
+      "13:30-14:30": {"pattern":"NR7","signals":261,"hit_rate":0.854},
+      "14:30-15:30": {"pattern":"NR4","signals":488,"hit_rate":0.772}
+    },
+    "BANKNIFTY": {
+      "09:30-10:30": {"pattern":"NR7","signals":246,"hit_rate":0.789},
+      "10:30-11:30": {"pattern":"NR7","signals":312,"hit_rate":0.846},
+      "11:30-12:30": {"pattern":"NR7","signals":266,"hit_rate":0.801},
+      "12:30-13:30": {"pattern":"INSIDE_BAR","signals":217,"hit_rate":0.806},
+      "13:30-14:30": {"pattern":"INSIDE_BAR","signals":207,"hit_rate":0.855},
+      "14:30-15:30": {"pattern":"NR4","signals":431,"hit_rate":0.816}
+    }
+  }
+}
