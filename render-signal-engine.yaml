@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: psycho-intraday-signal-engine
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements-signal-engine.txt
+    startCommand: python intraday_signal_engine.py
+    envVars:
+      - key: DHAN_CLIENT_ID
+        sync: false
+      - key: DHAN_ACCESS_TOKEN
+        sync: false
