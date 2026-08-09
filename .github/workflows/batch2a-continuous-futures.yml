@@ -2,9 +2,12 @@ name: PSYCHO Batch 2A Continuous Futures Acquisition
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
 
 jobs:
   batch2a:
+    if: github.event_name == 'workflow_dispatch' || github.event.head_commit.message == 'RUN BATCH 2A'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
