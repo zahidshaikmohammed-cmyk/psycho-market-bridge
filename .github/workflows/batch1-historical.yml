@@ -1,6 +1,10 @@
 name: PSYCHO Batch 1 Historical Acquisition
 
 on:
+  push:
+    paths:
+      - 'historical_research_acquisition.py'
+      - '.github/workflows/batch1-historical.yml'
   workflow_dispatch:
 
 jobs:
@@ -15,9 +19,15 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Verify Dhan secrets exist
+        run: |
+          test -n "$DHAN_CLIENT_ID" || (echo 'DHAN_CLIENT_ID secret missing' && exit 1)
+          test -n "$DHAN_ACCESS_TOKEN" || (echo 'DHAN_ACCESS_TOKEN secret missing' && exit 1)
+          echo 'Dhan runtime secrets detected.'
       - name: Run Batch 1 acquisition
         run: python historical_research_acquisition.py
       - name: Upload validated Batch 1 data
+        if: success()
         uses: actions/upload-artifact@v4
         with:
           name: psycho-batch1-underlying
