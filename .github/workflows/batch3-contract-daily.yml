@@ -1,0 +1,36 @@
+name: PSYCHO Batch 3 Contract Daily Derivatives
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'batch3_contract_daily_derivatives.py'
+      - '.github/workflows/batch3-contract-daily.yml'
+
+jobs:
+  batch3:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      DHAN_ACCESS_TOKEN: ${{ secrets.DHAN_ACCESS_TOKEN }}
+      BATCH3_FROM: '2025-08-11'
+      BATCH3_TO: '2026-08-09'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Verify Dhan secret exists
+        run: |
+          test -n "$DHAN_ACCESS_TOKEN" || (echo 'DHAN_ACCESS_TOKEN secret missing' && exit 1)
+          echo 'Dhan runtime secret detected.'
+      - name: Install dependencies
+        run: python -m pip install --upgrade pip
+      - name: Run Batch 3 acquisition
+        run: python batch3_contract_daily_derivatives.py
+      - name: Upload Batch 3 data
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: psycho-batch3-contract-daily-derivatives
+          path: research_data/batch3_contract_daily_derivatives/
+          if-no-files-found: error
+          retention-days: 30
