@@ -52,10 +52,6 @@ except Exception as error:
 # ============================================================
 # PSYCHO PHASE 2 — DHAN AUTHENTICATION HARDENING
 # ============================================================
-# Dhan individual access tokens are valid for 24 hours. When TOTP is
-# configured, generate the token automatically before bridge.py imports it,
-# refresh it on a 401, and proactively renew it before expiry.
-
 DHAN_CLIENT_ID = os.environ.get("DHAN_CLIENT_ID", "").strip()
 DHAN_TOTP_SECRET = os.environ.get("DHAN_TOTP_SECRET", "").strip()
 DHAN_PIN = os.environ.get("DHAN_PIN", "").strip()
@@ -67,9 +63,6 @@ _last_token = os.environ.get("DHAN_ACCESS_TOKEN", "").strip()
 _auth_last_error = None
 _auth_last_success = None
 _token_expiry = None
-
-# The legacy bridge reads this at import time. Never let a missing variable
-# crash the whole service before we can expose a useful auth diagnosis.
 os.environ.setdefault("DHAN_ACCESS_TOKEN", _last_token)
 
 
@@ -102,38 +95,21 @@ def _generate_token(force=False):
     global _last_generation, _auth_last_error, _auth_last_success
     if not (DHAN_CLIENT_ID and DHAN_PIN and DHAN_TOTP_SECRET):
         return None
-
     with _auth_lock:
         now = time.time()
         if not force and _last_token:
             return _last_token
         if now - _last_generation < MIN_TOKEN_REGEN_INTERVAL:
             return _last_token or None
-
         try:
             code = _totp(DHAN_TOTP_SECRET, now)
-            query = urllib.parse.urlencode({
-                "dhanClientId": DHAN_CLIENT_ID,
-                "pin": DHAN_PIN,
-                "totp": code,
-            })
-            request = urllib.request.Request(
-                f"{AUTH_URL}?{query}",
-                data=b"",
-                headers={"Accept": "application/json"},
-                method="POST",
-            )
+            query = urllib.parse.urlencode({"dhanClientId": DHAN_CLIENT_ID, "pin": DHAN_PIN, "totp": code})
+            request = urllib.request.Request(f"{AUTH_URL}?{query}", data=b"", headers={"Accept": "application/json"}, method="POST")
             with urllib.request.urlopen(request, timeout=20) as response:
                 payload = json.loads(response.read().decode("utf-8"))
-
             token = payload.get("accessToken")
             if not token:
-                raise RuntimeError(
-                    "response did not contain accessToken"
-                    f" (status={payload.get('status')}, "
-                    f"error={payload.get('errorMessage') or payload.get('message')})"
-                )
-
+                raise RuntimeError("response did not contain accessToken" f" (status={payload.get('status')}, error={payload.get('errorMessage') or payload.get('message')})")
             expiry = payload.get("expiryTime")
             _last_generation = now
             _set_token(token, expiry)
@@ -159,12 +135,8 @@ def _dhan_urlopen(request, *args, **kwargs):
             host = urllib.parse.urlparse(request.full_url).netloc
         except Exception:
             host = ""
-
-        # Only retry authenticated Dhan API calls. Never intercept the auth
-        # generation endpoint itself.
         if exc.code != 401 or host != "api.dhan.co":
             raise
-
         try:
             exc.read()
         except Exception:
@@ -173,12 +145,9 @@ def _dhan_urlopen(request, *args, **kwargs):
             exc.close()
         except Exception:
             pass
-
         token = _generate_token(force=True)
         if not token:
             raise
-
-        # _set_token() updates bridge.TOKEN if bridge is already imported.
         return _original_urlopen(request, *args, **kwargs)
 
 
@@ -222,24 +191,18 @@ def _cleanup_failed_snapshot(config):
 
 
 def _patch_bridge():
-    # Wait until bridge.py has finished importing.
     while "bridge" not in sys.modules:
         time.sleep(0.05)
-
     bridge = sys.modules["bridge"]
     if getattr(bridge, "_psycho_hardening_applied", False):
         return
-
     original_build = bridge.build_instrument
 
     def guarded_build(key, config, session_date):
         snapshot = original_build(key, config, session_date)
         if not _data_is_valid(snapshot):
             _cleanup_failed_snapshot(config)
-            raise RuntimeError(
-                f"{config.get('display_name', key)}: NO VALID MARKET DATA "
-                f"(DHAN authentication/data acquisition failed)"
-            )
+            raise RuntimeError(f"{config.get('display_name', key)}: NO VALID MARKET DATA (DHAN authentication/data acquisition failed)")
         return snapshot
 
     bridge.build_instrument = guarded_build
@@ -260,15 +223,8 @@ def _patch_bridge():
                 "token_expiry": _token_expiry,
             },
         })
+    bridge.app.add_url_rule("/auth-status", endpoint="psycho_auth_status", view_func=auth_status_view, methods=["GET"])
 
-    bridge.app.add_url_rule(
-        "/auth-status",
-        endpoint="psycho_auth_status",
-        view_func=auth_status_view,
-        methods=["GET"],
-    )
-
-    # Replace the misleading "file exists = data ready" dashboard status.
     if bridge.app.view_functions.get("bridge_status"):
         def hardened_bridge_status():
             from flask import jsonify
@@ -287,7 +243,6 @@ def _patch_bridge():
                     "snapshot_generated_at": (snap or {}).get("snapshot_generated_at") if isinstance(snap, dict) else None,
                     "last_price": ((market or {}).get("current_session") or {}).get("last_price"),
                 }
-
             any_ready = any(item["data_ready"] for item in status.values())
             return jsonify({
                 "service": "PSYCHO MARKET BRIDGE",
@@ -300,18 +255,16 @@ def _patch_bridge():
                 "refresh_target_seconds": bridge.REFRESH_INTERVAL_SECONDS,
                 "instruments": status,
             })
-
         bridge.app.view_functions["bridge_status"] = hardened_bridge_status
 
     bridge._psycho_hardening_applied = True
     print("PSYCHO HARDENING: bridge data-health/auth diagnostics applied", flush=True)
 
 
-# Establish authentication before bridge.py reads DHAN_ACCESS_TOKEN.
 _auth_bootstrap()
 threading.Thread(target=_patch_bridge, daemon=True, name="psycho-bridge-hardening").start()
 
-# Proactively renew well before the 24-hour token expiry when TOTP is configured.
+
 def _renewal_worker():
     if not (DHAN_CLIENT_ID and DHAN_PIN and DHAN_TOTP_SECRET):
         return
@@ -320,3 +273,84 @@ def _renewal_worker():
         _generate_token(force=True)
 
 threading.Thread(target=_renewal_worker, daemon=True, name="psycho-token-renewal").start()
+
+# ============================================================
+# PSYCHO ENGINE COMPATIBILITY — SPLIT OPTION CHAIN ADAPTER
+# ============================================================
+# Phase 2 now exposes market data and option-chain data through separate
+# endpoints. The older opportunity/hunter/9301030/10301130 engines expect
+# option_chain to be embedded in /nifty-live and /banknifty-live. Merge it
+# transparently at runtime so their locked strategy logic remains unchanged.
+
+_COMPAT_BRIDGE_HOST = "psycho-market-bridge.onrender.com"
+_COMPAT_ORIGINAL_URLOPEN = urllib.request.urlopen
+
+
+class _PsychoBufferedResponse:
+    def __init__(self, body, original):
+        self._body = __import__("io").BytesIO(body)
+        self.headers = getattr(original, "headers", None)
+        self.url = getattr(original, "url", None)
+        self.status = getattr(original, "status", None)
+        self.code = getattr(original, "code", None)
+        self.reason = getattr(original, "reason", None)
+
+    def read(self, *args, **kwargs):
+        return self._body.read(*args, **kwargs)
+
+    def getcode(self):
+        return self.code
+
+    def geturl(self):
+        return self.url
+
+    def info(self):
+        return self.headers
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc, tb):
+        self._body.close()
+        return False
+
+
+def _psycho_engine_urlopen(request, *args, **kwargs):
+    try:
+        url = request.full_url if isinstance(request, urllib.request.Request) else str(request)
+        parsed = urllib.parse.urlparse(url)
+    except Exception:
+        return _COMPAT_ORIGINAL_URLOPEN(request, *args, **kwargs)
+
+    if parsed.netloc != _COMPAT_BRIDGE_HOST or parsed.path not in ("/nifty-live", "/banknifty-live"):
+        return _COMPAT_ORIGINAL_URLOPEN(request, *args, **kwargs)
+
+    original = _COMPAT_ORIGINAL_URLOPEN(request, *args, **kwargs)
+    raw = original.read()
+    try:
+        market = json.loads(raw.decode("utf-8"))
+    except Exception:
+        return _PsychoBufferedResponse(raw, original)
+
+    if isinstance(market, dict) and "option_chain" not in market:
+        option_path = "/nifty-option-chain" if parsed.path == "/nifty-live" else "/banknifty-option-chain"
+        try:
+            option_req = urllib.request.Request(
+                f"https://{_COMPAT_BRIDGE_HOST}{option_path}",
+                headers={"Accept": "application/json", "User-Agent": "PSYCHO-ENGINE-COMPAT/1.0"},
+            )
+            with _COMPAT_ORIGINAL_URLOPEN(option_req, timeout=15) as option_resp:
+                option = json.loads(option_resp.read().decode("utf-8"))
+            if isinstance(option, dict):
+                market["option_chain"] = option
+                market["compatibility"] = {"option_chain_merged": True, "source": option_path}
+                raw = json.dumps(market, ensure_ascii=False).encode("utf-8")
+        except Exception as exc:
+            market["compatibility"] = {"option_chain_merged": False, "option_chain_error": type(exc).__name__}
+            raw = json.dumps(market, ensure_ascii=False).encode("utf-8")
+
+    return _PsychoBufferedResponse(raw, original)
+
+
+urllib.request.urlopen = _psycho_engine_urlopen
+print("PSYCHO ENGINE COMPAT: split option-chain adapter enabled", flush=True)
