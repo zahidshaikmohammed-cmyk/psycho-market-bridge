@@ -1,338 +1,404 @@
-import os
-import csv
-import io
-import json
-import time
-import threading
-import urllib.request
+import os, csv, io, json, time, threading, urllib.request, urllib.error
+import base64, hashlib, hmac, struct, urllib.parse
 from datetime import datetime, timedelta, time as dt_time
 from zoneinfo import ZoneInfo
-
 from flask import Flask, Response, jsonify
 
-# ============================================================
-# PSYCHO MARKET BRIDGE
-# PHASE 2 LIVE DATA ENGINE
-# ============================================================
-
-TOKEN = os.environ["DHAN_ACCESS_TOKEN"]
-CLIENT_ID = os.environ["DHAN_CLIENT_ID"]
 IST = ZoneInfo("Asia/Kolkata")
+CLIENT_ID = os.environ.get("DHAN_CLIENT_ID", "").strip()
+TOKEN = os.environ.get("DHAN_ACCESS_TOKEN", "").strip()
+TOTP_SECRET = os.environ.get("DHAN_TOTP_SECRET", "").strip()
+DHAN_PIN = os.environ.get("DHAN_PIN", "").strip()
 
 INTRADAY_URL = "https://api.dhan.co/v2/charts/intraday"
 HISTORICAL_URL = "https://api.dhan.co/v2/charts/historical"
 EXPIRY_LIST_URL = "https://api.dhan.co/v2/optionchain/expirylist"
 OPTION_CHAIN_URL = "https://api.dhan.co/v2/optionchain"
 MARKET_QUOTE_URL = "https://api.dhan.co/v2/marketfeed/quote"
+PROFILE_URL = "https://api.dhan.co/v2/profile"
+AUTH_URL = "https://auth.dhan.co/app/generateAccessToken"
 INSTRUMENT_MASTER_URL = "https://images.dhan.co/api-data/api-scrip-master-detailed.csv"
 
 MARKET_OPEN = dt_time(9, 15)
 MARKET_CLOSE = dt_time(15, 40)
 REFRESH_INTERVAL_SECONDS = 60
 OPTION_CHAIN_DELAY_SECONDS = 3.2
-
-INSTRUMENTS = {
-    "NIFTY": {"display_name": "NIFTY", "security_id": "13", "underlying_symbol": "NIFTY", "market_file": "nifty-live.json", "option_file": "nifty-option-chain.json", "snapshot_file": "nifty-session-snapshot.json", "futures_file": "nifty-futures-live.json"},
-    "BANKNIFTY": {"display_name": "BANK NIFTY", "security_id": "25", "underlying_symbol": "BANKNIFTY", "market_file": "banknifty-live.json", "option_file": "banknifty-option-chain.json", "snapshot_file": "banknifty-session-snapshot.json", "futures_file": "banknifty-futures-live.json"}
-}
-
+TOKEN_REGEN_GUARD_SECONDS = 120
 LIMITS = {"1M": 400, "5M": 200, "15M": 120, "1H": 100, "1D": 120, "1W": 80}
 OPTION_STRIKES_EACH_SIDE = 10
 refresh_lock = threading.Lock()
+auth_lock = threading.Lock()
+last_token_generation = 0.0
+auth_state = {"status": "NOT_CHECKED", "last_error": None, "last_success": None, "expiry": None}
 
+INSTRUMENTS = {
+    "NIFTY": {
+        "display_name": "NIFTY", "security_id": "13", "underlying_symbol": "NIFTY",
+        "market_file": "nifty-live.json", "option_file": "nifty-option-chain.json",
+        "snapshot_file": "nifty-session-snapshot.json", "futures_file": "nifty-futures-live.json"
+    },
+    "BANKNIFTY": {
+        "display_name": "BANK NIFTY", "security_id": "25", "underlying_symbol": "BANKNIFTY",
+        "market_file": "banknifty-live.json", "option_file": "banknifty-option-chain.json",
+        "snapshot_file": "banknifty-session-snapshot.json", "futures_file": "banknifty-futures-live.json"
+    }
+}
 
 def now_ist(): return datetime.now(IST)
 def iso_now(): return now_ist().isoformat()
-def is_weekday(value=None): return (value or now_ist()).weekday() < 5
-
-def is_market_window(value=None):
-    value = value or now_ist()
-    return is_weekday(value) and MARKET_OPEN <= value.time() <= MARKET_CLOSE
-
+def is_weekday(v=None): return (v or now_ist()).weekday() < 5
+def is_market_window(v=None):
+    v = v or now_ist()
+    return is_weekday(v) and MARKET_OPEN <= v.time() <= MARKET_CLOSE
 
 def market_status():
-    current = now_ist()
-    if not is_weekday(current): reason = "WEEKEND"
-    elif current.time() < MARKET_OPEN: reason = "PRE_MARKET"
-    elif current.time() > MARKET_CLOSE: reason = "SESSION_FINISHED"
-    else: return {"status":"OPEN","reason":"LIVE_MARKET_WINDOW","current_time":current.isoformat(),"market_open":"09:15 IST","collection_end":"15:40 IST"}
-    return {"status":"CLOSED","reason":reason,"current_time":current.isoformat(),"market_open":"09:15 IST","collection_end":"15:40 IST"}
-
+    cur = now_ist()
+    if not is_weekday(cur): reason = "WEEKEND"
+    elif cur.time() < MARKET_OPEN: reason = "PRE_MARKET"
+    elif cur.time() > MARKET_CLOSE: reason = "SESSION_FINISHED"
+    else:
+        return {"status":"OPEN","reason":"LIVE_MARKET_WINDOW","current_time":cur.isoformat(),"market_open":"09:15 IST","collection_end":"15:40 IST"}
+    return {"status":"CLOSED","reason":reason,"current_time":cur.isoformat(),"market_open":"09:15 IST","collection_end":"15:40 IST"}
 
 def write_json_atomic(filename, data):
     tmp = filename + ".tmp"
-    with open(tmp, "w", encoding="utf-8") as file:
-        json.dump(data, file, indent=2, ensure_ascii=False)
-        file.flush(); os.fsync(file.fileno())
+    with open(tmp, "w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2, ensure_ascii=False)
+        f.flush(); os.fsync(f.fileno())
     os.replace(tmp, filename)
-
 
 def read_json_file(filename):
     if not os.path.exists(filename): return None
     try:
-        with open(filename, "r", encoding="utf-8") as file: return json.load(file)
-    except Exception as error:
-        print(f"JSON READ ERROR {filename}: {error}", flush=True); return None
+        with open(filename, "r", encoding="utf-8") as f: return json.load(f)
+    except Exception as e:
+        print(f"JSON READ ERROR {filename}: {e}", flush=True); return None
 
+def totp(secret, at=None):
+    secret = "".join(secret.split()).replace("-", "").upper()
+    key = base64.b32decode(secret + "=" * ((8-len(secret)%8)%8), casefold=True)
+    counter = int((at if at is not None else time.time()) // 30)
+    digest = hmac.new(key, struct.pack(">Q", counter), hashlib.sha1).digest()
+    offset = digest[-1] & 15
+    value = struct.unpack(">I", digest[offset:offset+4])[0] & 0x7fffffff
+    return f"{value % 1000000:06d}"
 
-def dhan_request(url, payload, client_id_required=False):
-    body = json.dumps(payload).encode("utf-8")
+def generate_access_token(force=False):
+    global TOKEN, last_token_generation
+    if not (CLIENT_ID and TOTP_SECRET and DHAN_PIN):
+        return None
+    with auth_lock:
+        now = time.time()
+        if not force and TOKEN:
+            return TOKEN
+        if now - last_token_generation < TOKEN_REGEN_GUARD_SECONDS:
+            return TOKEN or None
+        try:
+            code = totp(TOTP_SECRET, now)
+            query = urllib.parse.urlencode({"dhanClientId": CLIENT_ID, "pin": DHAN_PIN, "totp": code})
+            req = urllib.request.Request(f"{AUTH_URL}?{query}", data=b"", headers={"Accept":"application/json"}, method="POST")
+            with urllib.request.urlopen(req, timeout=20) as r:
+                payload = json.loads(r.read().decode("utf-8"))
+            token = (payload.get("accessToken") or "").strip()
+            if not token:
+                raise RuntimeError(payload.get("errorMessage") or payload.get("message") or "No accessToken in Dhan response")
+            TOKEN = token
+            os.environ["DHAN_ACCESS_TOKEN"] = token
+            last_token_generation = now
+            auth_state.update({"status":"AUTHENTICATED","last_error":None,"last_success":iso_now(),"expiry":payload.get("expiryTime")})
+            print(f"DHAN AUTH: token generated; expiry={payload.get('expiryTime')}", flush=True)
+            return token
+        except Exception as e:
+            last_token_generation = now
+            auth_state.update({"status":"AUTH_FAILED","last_error":f"{type(e).__name__}: {e}"})
+            print(f"DHAN AUTH GENERATION FAILED: {type(e).__name__}: {e}", flush=True)
+            return None
+
+def _http_error_detail(exc):
+    try:
+        raw = exc.read().decode("utf-8", errors="replace")
+        try:
+            payload = json.loads(raw)
+            code = payload.get("errorCode") or payload.get("errorType")
+            message = payload.get("errorMessage") or payload.get("message") or raw
+            return f"{code}: {message}" if code else message
+        except Exception:
+            return raw or str(exc)
+    except Exception:
+        return str(exc)
+
+def dhan_request(url, payload=None, client_id_required=False, _retry=True):
+    global TOKEN
+    if not TOKEN and TOTP_SECRET and DHAN_PIN:
+        generate_access_token(force=True)
+    if not TOKEN:
+        raise RuntimeError("DHAN_AUTH_MISSING: set DHAN_ACCESS_TOKEN or configure DHAN_PIN + DHAN_TOTP_SECRET")
+    body = json.dumps(payload or {}).encode("utf-8")
     headers = {"Accept":"application/json","Content-Type":"application/json","access-token":TOKEN}
     if client_id_required: headers["client-id"] = CLIENT_ID
-    request = urllib.request.Request(url, data=body, headers=headers, method="POST")
-    with urllib.request.urlopen(request, timeout=30) as response: return json.loads(response.read().decode("utf-8"))
-
-
-def safe_fetch(label, function):
+    req = urllib.request.Request(url, data=body, headers=headers, method="POST")
     try:
-        result = function(); print(f"SUCCESS: {label}", flush=True); return result
-    except Exception as error:
-        print(f"ERROR: {label}: {error}", flush=True); return {"error":str(error),"label":label,"generated_at":iso_now()}
+        with urllib.request.urlopen(req, timeout=30) as r:
+            return json.loads(r.read().decode("utf-8"))
+    except urllib.error.HTTPError as e:
+        detail = _http_error_detail(e)
+        if e.code == 401 and _retry and TOTP_SECRET and DHAN_PIN:
+            print("DHAN AUTH: 401 received; attempting automatic token regeneration", flush=True)
+            new_token = generate_access_token(force=True)
+            if new_token and new_token != headers["access-token"]:
+                return dhan_request(url, payload, client_id_required, _retry=False)
+        if e.code == 401:
+            auth_state.update({"status":"AUTH_FAILED","last_error":detail})
+        raise RuntimeError(f"DHAN_HTTP_{e.code}: {detail}") from None
 
+def validate_auth():
+    global TOKEN
+    if not TOKEN and TOTP_SECRET and DHAN_PIN:
+        generate_access_token(force=True)
+    if not TOKEN:
+        auth_state.update({"status":"AUTH_FAILED","last_error":"No access token configured"})
+        return False
+    try:
+        req = urllib.request.Request(PROFILE_URL, headers={"Accept":"application/json","access-token":TOKEN}, method="GET")
+        with urllib.request.urlopen(req, timeout=20) as r:
+            json.loads(r.read().decode("utf-8"))
+        auth_state.update({"status":"AUTHENTICATED","last_error":None,"last_success":iso_now()})
+        return True
+    except urllib.error.HTTPError as e:
+        detail = _http_error_detail(e)
+        if e.code == 401 and TOTP_SECRET and DHAN_PIN:
+            if generate_access_token(force=True):
+                return validate_auth()
+        auth_state.update({"status":"AUTH_FAILED","last_error":detail})
+        print(f"DHAN AUTH VALIDATION FAILED: {detail}", flush=True)
+        return False
+    except Exception as e:
+        auth_state.update({"status":"AUTH_ERROR","last_error":f"{type(e).__name__}: {e}"})
+        return False
+
+def safe_fetch(label, fn):
+    try:
+        result = fn(); print(f"SUCCESS: {label}", flush=True); return result
+    except Exception as e:
+        print(f"ERROR: {label}: {e}", flush=True)
+        return {"error": str(e), "label": label, "generated_at": iso_now()}
 
 def normalize_candles(raw):
     if not isinstance(raw, dict): return []
-    keys=["timestamp","open","high","low","close","volume"]
-    arrays={key:raw.get(key,[]) or [] for key in keys}
-    count=min(len(arrays[key]) for key in keys)
-    candles=[]
+    keys = ["timestamp","open","high","low","close","volume"]
+    arrays = {k: raw.get(k,[]) or [] for k in keys}
+    count = min((len(arrays[k]) for k in keys), default=0)
+    out=[]
     for i in range(count):
-        try: timestamp=int(arrays["timestamp"][i])
+        try: ts=int(arrays["timestamp"][i])
         except (TypeError,ValueError): continue
-        candles.append({"timestamp":timestamp,"open":arrays["open"][i],"high":arrays["high"][i],"low":arrays["low"][i],"close":arrays["close"][i],"volume":arrays["volume"][i]})
-    candles.sort(key=lambda x:x["timestamp"]); return candles
+        out.append({"timestamp":ts,"open":arrays["open"][i],"high":arrays["high"][i],"low":arrays["low"][i],"close":arrays["close"][i],"volume":arrays["volume"][i]})
+    return sorted(out,key=lambda x:x["timestamp"])
 
-
-def candle_datetime(candle):
-    try: return datetime.fromtimestamp(int(candle["timestamp"]), IST)
+def candle_datetime(c):
+    try: return datetime.fromtimestamp(int(c["timestamp"]), IST)
     except Exception: return None
 
-
 def filter_session_candles(candles, session_date):
-    result=[]
-    for candle in candles or []:
-        dt=candle_datetime(candle)
-        if dt is None or dt.date()!=session_date or not (MARKET_OPEN <= dt.time() <= MARKET_CLOSE): continue
-        result.append(candle)
-    return sorted(result,key=lambda x:x["timestamp"])
+    out=[]
+    for c in candles or []:
+        dt=candle_datetime(c)
+        if dt and dt.date()==session_date and MARKET_OPEN <= dt.time() <= MARKET_CLOSE: out.append(c)
+    return sorted(out,key=lambda x:x["timestamp"])
 
+def trim(candles,tf): return (candles or [])[-LIMITS.get(tf,len(candles or [])):]
 
-def trim_candles(candles,timeframe): return (candles or [])[-LIMITS.get(timeframe,len(candles or [])):]
-
-
-def fetch_intraday(security_id, interval, session_date=None, exchange_segment="IDX_I", instrument="INDEX", oi=False):
-    current=now_ist(); session_date=session_date or current.date(); from_time=current-timedelta(days=10)
-    payload={"securityId":str(security_id),"exchangeSegment":exchange_segment,"instrument":instrument,"interval":str(interval),"oi":bool(oi),"fromDate":from_time.strftime("%Y-%m-%d 09:15:00"),"toDate":current.strftime("%Y-%m-%d %H:%M:%S")}
+def fetch_intraday(sid, interval, session_date=None, exchange_segment="IDX_I", instrument="INDEX", oi=False):
+    current=now_ist(); session_date=session_date or current.date()
+    payload={"securityId":str(sid),"exchangeSegment":exchange_segment,"instrument":instrument,"interval":str(interval),"oi":bool(oi),"fromDate":(current-timedelta(days=10)).strftime("%Y-%m-%d 09:15:00"),"toDate":current.strftime("%Y-%m-%d %H:%M:%S")}
     return filter_session_candles(normalize_candles(dhan_request(INTRADAY_URL,payload)),session_date)
 
-
-def fetch_daily(security_id):
-    current=now_ist(); payload={"securityId":str(security_id),"exchangeSegment":"IDX_I","instrument":"INDEX","expiryCode":0,"oi":False,"fromDate":(current-timedelta(days=730)).strftime("%Y-%m-%d"),"toDate":(current+timedelta(days=1)).strftime("%Y-%m-%d")}
+def fetch_daily(sid):
+    current=now_ist(); payload={"securityId":str(sid),"exchangeSegment":"IDX_I","instrument":"INDEX","expiryCode":0,"oi":False,"fromDate":(current-timedelta(days=730)).strftime("%Y-%m-%d"),"toDate":(current+timedelta(days=1)).strftime("%Y-%m-%d")}
     return normalize_candles(dhan_request(HISTORICAL_URL,payload))
 
+def candle_date(c):
+    dt=candle_datetime(c); return dt.date() if dt else None
 
-def candle_date(candle):
-    dt=candle_datetime(candle); return dt.date() if dt else None
-
-
-def previous_daily_candle(daily,session_date):
+def previous_daily(daily,session_date):
     candidates=[(candle_date(c),c) for c in daily if candle_date(c) and candle_date(c)<session_date]
     if not candidates: return None
     _,c=max(candidates,key=lambda x:x[0])
     return {"date":candle_date(c).isoformat(),"open":c.get("open"),"high":c.get("high"),"low":c.get("low"),"close":c.get("close"),"volume":c.get("volume"),"timestamp":c.get("timestamp")}
 
-
 def build_current_daily(candles,session_date):
     session=filter_session_candles(candles,session_date)
     if not session: return None
-    return {"timestamp":session[0]["timestamp"],"open":session[0].get("open"),"high":max(c["high"] for c in session if c.get("high") is not None),"low":min(c["low"] for c in session if c.get("low") is not None),"close":session[-1].get("close"),"volume":sum(c.get("volume") or 0 for c in session),"session_date":session_date.isoformat(),"developing":is_market_window()}
-
+    highs=[c.get("high") for c in session if c.get("high") is not None]; lows=[c.get("low") for c in session if c.get("low") is not None]
+    return {"timestamp":session[0]["timestamp"],"open":session[0].get("open"),"high":max(highs) if highs else None,"low":min(lows) if lows else None,"close":session[-1].get("close"),"volume":sum(c.get("volume") or 0 for c in session),"session_date":session_date.isoformat(),"developing":is_market_window()}
 
 def merge_daily(history,current,session_date):
-    result=[c for c in (history or []) if candle_date(c)!=session_date]
-    if current: result.append(current)
-    return sorted(result,key=lambda x:x.get("timestamp",0))
-
+    out=[c for c in history if candle_date(c)!=session_date]
+    if current: out.append(current)
+    return sorted(out,key=lambda x:x.get("timestamp",0))
 
 def aggregate_weekly(daily):
     weeks={}
-    for candle in daily or []:
-        dt=candle_datetime(candle)
+    for c in daily:
+        dt=candle_datetime(c)
         if not dt: continue
-        year,week,_=dt.isocalendar(); key=f"{year}-{week:02d}"
-        if key not in weeks: weeks[key]={"timestamp":candle.get("timestamp"),"week":key,"open":candle.get("open"),"high":candle.get("high"),"low":candle.get("low"),"close":candle.get("close"),"volume":candle.get("volume") or 0}
+        iso=dt.isocalendar(); key=f"{iso.year}-{iso.week:02d}"
+        if key not in weeks:
+            weeks[key]={"timestamp":c.get("timestamp"),"week":key,"open":c.get("open"),"high":c.get("high"),"low":c.get("low"),"close":c.get("close"),"volume":c.get("volume") or 0}
         else:
-            w=weeks[key]; w["high"]=max(w["high"],candle.get("high")); w["low"]=min(w["low"],candle.get("low")); w["close"]=candle.get("close"); w["volume"]+=candle.get("volume") or 0
-    return sorted(weeks.values(),key=lambda x:x.get("timestamp",0))
+            w=weeks[key]; w["high"]=max(w["high"],c.get("high")); w["low"]=min(w["low"],c.get("low")); w["close"]=c.get("close"); w["volume"]+=c.get("volume") or 0
+    return sorted(weeks.values(),key=lambda x:x["timestamp"])
 
-
-def calculate_gap(previous,current_open):
+def gap(previous,current_open):
     if not previous or previous.get("close") is None or current_open is None: return {"available":False,"type":"UNAVAILABLE","points":None,"percent":None}
-    prev=float(previous["close"]); op=float(current_open); points=op-prev
-    return {"available":True,"type":"GAP_UP" if points>0 else "GAP_DOWN" if points<0 else "FLAT","previous_close":prev,"current_open":op,"points":round(points,2),"percent":round(points/prev*100,4) if prev else None}
+    prev=float(previous["close"]); op=float(current_open); pts=op-prev
+    return {"available":True,"type":"GAP_UP" if pts>0 else "GAP_DOWN" if pts<0 else "FLAT","previous_close":prev,"current_open":op,"points":round(pts,2),"percent":round(pts/prev*100,4) if prev else None}
 
-
-def discover_nearest_futures(underlying_symbol):
-    request=urllib.request.Request(INSTRUMENT_MASTER_URL,headers={"User-Agent":"PSYCHO-MARKET-BRIDGE"})
-    with urllib.request.urlopen(request,timeout=30) as response: text=response.read().decode("utf-8",errors="replace")
-    reader=csv.DictReader(io.StringIO(text)); today=now_ist().date(); matches=[]
-    for row in reader:
+def discover_nearest_futures(symbol):
+    req=urllib.request.Request(INSTRUMENT_MASTER_URL,headers={"User-Agent":"PSYCHO-MARKET-BRIDGE"})
+    with urllib.request.urlopen(req,timeout=30) as r: text=r.read().decode("utf-8",errors="replace")
+    today=now_ist().date(); matches=[]
+    for row in csv.DictReader(io.StringIO(text)):
         try:
-            if row.get("EXCH_ID")!="NSE" or row.get("SEGMENT")!="D" or row.get("INSTRUMENT")!="FUTIDX" or (row.get("UNDERLYING_SYMBOL") or "").upper()!=underlying_symbol.upper(): continue
-            expiry_raw=row.get("SM_EXPIRY_DATE") or ""; expiry=datetime.strptime(expiry_raw[:10],"%Y-%m-%d").date()
+            if row.get("EXCH_ID")!="NSE" or row.get("SEGMENT")!="D" or row.get("INSTRUMENT")!="FUTIDX": continue
+            if (row.get("UNDERLYING_SYMBOL") or "").upper()!=symbol.upper(): continue
+            expiry=datetime.strptime((row.get("SM_EXPIRY_DATE") or "")[:10],"%Y-%m-%d").date()
             if expiry>=today: matches.append((expiry,row))
         except Exception: continue
-    if not matches: raise RuntimeError(f"No active FUTIDX contract found for {underlying_symbol}")
+    if not matches: raise RuntimeError(f"No active FUTIDX contract found for {symbol}")
     expiry,row=min(matches,key=lambda x:x[0])
-    return {"security_id":str(row.get("SECURITY_ID") or row.get("SEM_SMST_SECURITY_ID")),"expiry":expiry.isoformat(),"trading_symbol":row.get("SEM_TRADING_SYMBOL") or row.get("DISPLAY_NAME") or row.get("SYMBOL_NAME"),"underlying_symbol":underlying_symbol}
+    return {"security_id":str(row.get("SECURITY_ID") or row.get("SEM_SMST_SECURITY_ID")),"expiry":expiry.isoformat(),"trading_symbol":row.get("SEM_TRADING_SYMBOL") or row.get("DISPLAY_NAME") or row.get("SYMBOL_NAME"),"underlying_symbol":symbol}
 
+def fetch_futures(contract,session_date):
+    candles=fetch_intraday(contract["security_id"],5,session_date,"NSE_FNO","FUTIDX",True); latest=candles[-1] if candles else None
+    return {"status":"LIVE" if latest else "UNAVAILABLE","source":"DHAN","generated_at":iso_now(),**contract,"timeframe":"5M","latest":latest,"candles_5m":trim(candles,"5M"),"oi_enabled":True}
 
-def fetch_futures_data(contract,session_date):
-    candles=fetch_intraday(contract["security_id"],5,session_date,exchange_segment="NSE_FNO",instrument="FUTIDX",oi=True); latest=candles[-1] if candles else None
-    return {"status":"LIVE" if latest else "UNAVAILABLE","source":"DHAN","generated_at":iso_now(),"security_id":contract["security_id"],"trading_symbol":contract.get("trading_symbol"),"expiry":contract.get("expiry"),"underlying_symbol":contract.get("underlying_symbol"),"timeframe":"5M","latest":latest,"candles_5m":trim_candles(candles,"5M"),"oi_enabled":True}
+def fetch_market_quote(sid): return dhan_request(MARKET_QUOTE_URL,{"NSE_FNO":[int(sid)]},client_id_required=True)
 
+def clean_futures_quote(raw,sid):
+    data=(((raw or {}).get("data") or {}).get("NSE_FNO") or {}).get(str(sid)) or {}; depth=data.get("depth") or {}
+    return {"security_id":sid,"last_price":data.get("last_price"),"last_quantity":data.get("last_quantity"),"last_trade_time":data.get("last_trade_time"),"average_price":data.get("average_price"),"volume":data.get("volume"),"oi":data.get("oi"),"oi_day_high":data.get("oi_day_high"),"oi_day_low":data.get("oi_day_low"),"buy_quantity":data.get("buy_quantity"),"sell_quantity":data.get("sell_quantity"),"ohlc":data.get("ohlc"),"depth":{"buy":depth.get("buy",[]),"sell":depth.get("sell",[])}}
 
-def fetch_market_quote(security_id): return dhan_request(MARKET_QUOTE_URL,{"NSE_FNO":[int(security_id)]},client_id_required=True)
-
-
-def clean_futures_quote(raw,security_id):
-    data=(((raw or {}).get("data") or {}).get("NSE_FNO") or {}).get(str(security_id)) or {}; depth=data.get("depth") or {}
-    return {"security_id":security_id,"last_price":data.get("last_price"),"last_quantity":data.get("last_quantity"),"last_trade_time":data.get("last_trade_time"),"average_price":data.get("average_price"),"volume":data.get("volume"),"oi":data.get("oi"),"oi_day_high":data.get("oi_day_high"),"oi_day_low":data.get("oi_day_low"),"buy_quantity":data.get("buy_quantity"),"sell_quantity":data.get("sell_quantity"),"ohlc":data.get("ohlc"),"depth":{"buy":depth.get("buy",[]),"sell":depth.get("sell",[])}}
-
-
-def fetch_expiries(security_id):
-    raw=dhan_request(EXPIRY_LIST_URL,{"UnderlyingScrip":int(security_id),"UnderlyingSeg":"IDX_I"},client_id_required=True); expiries=raw.get("data",[])
+def fetch_expiries(sid):
+    raw=dhan_request(EXPIRY_LIST_URL,{"UnderlyingScrip":int(sid),"UnderlyingSeg":"IDX_I"},client_id_required=True); expiries=raw.get("data",[])
     if not expiries: raise RuntimeError("No active option expiry returned by DHAN")
     return expiries
 
-
 def clean_option_leg(leg):
     if not isinstance(leg,dict): return None
-    oi=leg.get("oi"); prev_oi=leg.get("previous_oi")
-    try: oi_change=float(oi)-float(prev_oi) if oi is not None and prev_oi is not None else None
-    except (TypeError,ValueError): oi_change=None
-    return {"security_id":leg.get("security_id"),"last_price":leg.get("last_price"),"average_price":leg.get("average_price"),"oi":oi,"previous_oi":prev_oi,"oi_change":oi_change,"volume":leg.get("volume"),"previous_volume":leg.get("previous_volume"),"implied_volatility":leg.get("implied_volatility"),"top_bid_price":leg.get("top_bid_price"),"top_bid_quantity":leg.get("top_bid_quantity"),"top_ask_price":leg.get("top_ask_price"),"top_ask_quantity":leg.get("top_ask_quantity"),"greeks":leg.get("greeks") or {}}
+    oi=leg.get("oi"); prev=leg.get("previous_oi")
+    try: change=float(oi)-float(prev) if oi is not None and prev is not None else None
+    except (TypeError,ValueError): change=None
+    return {"security_id":leg.get("security_id"),"last_price":leg.get("last_price"),"average_price":leg.get("average_price"),"oi":oi,"previous_oi":prev,"oi_change":change,"volume":leg.get("volume"),"previous_volume":leg.get("previous_volume"),"implied_volatility":leg.get("implied_volatility"),"top_bid_price":leg.get("top_bid_price"),"top_bid_quantity":leg.get("top_bid_quantity"),"top_ask_price":leg.get("top_ask_price"),"top_ask_quantity":leg.get("top_ask_quantity"),"greeks":leg.get("greeks") or {}}
 
-
-def build_option_chain(security_id,session_date):
-    expiries=fetch_expiries(security_id); expiry=expiries[0]; time.sleep(OPTION_CHAIN_DELAY_SECONDS)
-    raw=dhan_request(OPTION_CHAIN_URL,{"UnderlyingScrip":int(security_id),"UnderlyingSeg":"IDX_I","Expiry":expiry},client_id_required=True); data=raw.get("data") or {}; underlying_ltp=data.get("last_price"); oc=data.get("oc") or {}; rows=[]
-    for strike,strike_data in oc.items():
-        try: rows.append((float(strike),strike_data if isinstance(strike_data,dict) else {}))
+def build_option_chain(sid,session_date):
+    expiry=fetch_expiries(sid)[0]; time.sleep(OPTION_CHAIN_DELAY_SECONDS)
+    raw=dhan_request(OPTION_CHAIN_URL,{"UnderlyingScrip":int(sid),"UnderlyingSeg":"IDX_I","Expiry":expiry},client_id_required=True); data=raw.get("data") or {}; ltp=data.get("last_price"); oc=data.get("oc") or {}; rows=[]
+    for strike,sd in oc.items():
+        try: rows.append((float(strike),sd if isinstance(sd,dict) else {}))
         except (TypeError,ValueError): pass
     rows.sort(key=lambda x:x[0])
     if not rows: raise RuntimeError("No option strikes returned")
-    try: atm_index=min(range(len(rows)),key=lambda i:abs(rows[i][0]-float(underlying_ltp))) if underlying_ltp is not None else len(rows)//2
-    except (TypeError,ValueError): atm_index=len(rows)//2
-    selected=rows[max(0,atm_index-OPTION_STRIKES_EACH_SIDE):min(len(rows),atm_index+OPTION_STRIKES_EACH_SIDE+1)]; strikes={}
-    for strike,strike_data in selected: strikes[str(strike)]={"strike":strike,"CE":clean_option_leg(strike_data.get("ce")),"PE":clean_option_leg(strike_data.get("pe"))}
-    return {"status":"LIVE","source":"DHAN","instrument_security_id":str(security_id),"session_date":session_date.isoformat(),"generated_at":iso_now(),"expiry":expiry,"underlying_ltp":underlying_ltp,"atm_strike":rows[atm_index][0],"strike_range":{"below_atm":OPTION_STRIKES_EACH_SIDE,"above_atm":OPTION_STRIKES_EACH_SIDE,"total_returned":len(selected)},"strikes":strikes}
+    try: atm=min(range(len(rows)),key=lambda i:abs(rows[i][0]-float(ltp))) if ltp is not None else len(rows)//2
+    except (TypeError,ValueError): atm=len(rows)//2
+    selected=rows[max(0,atm-OPTION_STRIKES_EACH_SIDE):min(len(rows),atm+OPTION_STRIKES_EACH_SIDE+1)]
+    strikes={str(s):{"strike":s,"CE":clean_option_leg(sd.get("ce")),"PE":clean_option_leg(sd.get("pe"))} for s,sd in selected}
+    return {"status":"LIVE","source":"DHAN","instrument_security_id":str(sid),"session_date":session_date.isoformat(),"generated_at":iso_now(),"expiry":expiry,"underlying_ltp":ltp,"atm_strike":rows[atm][0],"strike_range":{"below_atm":OPTION_STRIKES_EACH_SIDE,"above_atm":OPTION_STRIKES_EACH_SIDE,"total_returned":len(selected)},"strikes":strikes}
 
+def valid_market(market):
+    if not isinstance(market,dict): return False
+    cur=market.get("current_session") or {}
+    return cur.get("last_price") is not None or any((market.get("timeframes") or {}).get(tf) for tf in ("1M","5M","15M","1H","1D","1W"))
 
 def build_instrument(key,config,session_date):
-    name=config["display_name"]; sid=config["security_id"]; print(f"BUILDING {name} {session_date.isoformat()}",flush=True)
-    candles_1m=safe_fetch(f"{name} 1M",lambda:fetch_intraday(sid,1,session_date)); candles_5m=safe_fetch(f"{name} 5M",lambda:fetch_intraday(sid,5,session_date)); candles_15m=safe_fetch(f"{name} 15M",lambda:fetch_intraday(sid,15,session_date)); candles_1h=safe_fetch(f"{name} 1H",lambda:fetch_intraday(sid,60,session_date)); daily_history=safe_fetch(f"{name} 1D",lambda:fetch_daily(sid))
-    if not isinstance(candles_1m,list): candles_1m=[]
-    if not isinstance(candles_5m,list): candles_5m=[]
-    if not isinstance(candles_15m,list): candles_15m=[]
-    if not isinstance(candles_1h,list): candles_1h=[]
-    if not isinstance(daily_history,list): daily_history=[]
-    previous=previous_daily_candle(daily_history,session_date); current_daily=build_current_daily(candles_1m,session_date); daily=merge_daily(daily_history,current_daily,session_date); weekly=aggregate_weekly(daily)
-    market_output={"status":"LIVE","source":"DHAN","instrument":name,"security_id":sid,"session_date":session_date.isoformat(),"generated_at":iso_now(),"session_isolation":True,"previous_session":previous,"current_session":{"available":bool(candles_1m),"open":candles_1m[0].get("open") if candles_1m else None,"high":max([c.get("high") for c in candles_1m if c.get("high") is not None],default=None),"low":min([c.get("low") for c in candles_1m if c.get("low") is not None],default=None),"last_price":candles_1m[-1].get("close") if candles_1m else None,"latest_candle_time":candle_datetime(candles_1m[-1]).isoformat() if candles_1m and candle_datetime(candles_1m[-1]) else None,"gap":calculate_gap(previous,candles_1m[0].get("open") if candles_1m else None)},"timeframes":{"1M":trim_candles(candles_1m,"1M"),"5M":trim_candles(candles_5m,"5M"),"15M":trim_candles(candles_15m,"15M"),"1H":trim_candles(candles_1h,"1H"),"1D":trim_candles(daily,"1D"),"1W":trim_candles(weekly,"1W")},"volume_note":"Underlying index volume is preserved exactly as returned by DHAN; index volume may be zero/non-traded by instrument design. Futures volume is captured separately."}
-    write_json_atomic(config["market_file"],market_output)
-    futures_output={"status":"UNAVAILABLE","source":"DHAN","generated_at":iso_now()}
+    name=config["display_name"]; sid=config["security_id"]; print(f"BUILDING {name} {session_date}",flush=True)
+    c1=safe_fetch(f"{name} 1M",lambda:fetch_intraday(sid,1,session_date)); c5=safe_fetch(f"{name} 5M",lambda:fetch_intraday(sid,5,session_date)); c15=safe_fetch(f"{name} 15M",lambda:fetch_intraday(sid,15,session_date)); c1h=safe_fetch(f"{name} 1H",lambda:fetch_intraday(sid,60,session_date)); dh=safe_fetch(f"{name} 1D",lambda:fetch_daily(sid))
+    c1,c5,c15,c1h,dh=[x if isinstance(x,list) else [] for x in (c1,c5,c15,c1h,dh)]
+    prev=previous_daily(dh,session_date); curdaily=build_current_daily(c1,session_date); daily=merge_daily(dh,curdaily,session_date); weekly=aggregate_weekly(daily)
+    market={"status":"LIVE" if c1 else "DEGRADED","source":"DHAN","instrument":name,"security_id":sid,"session_date":session_date.isoformat(),"generated_at":iso_now(),"session_isolation":True,"current_session":{"available":bool(c1),"open":c1[0].get("open") if c1 else None,"high":max([c.get("high") for c in c1 if c.get("high") is not None],default=None),"low":min([c.get("low") for c in c1 if c.get("low") is not None],default=None),"last_price":c1[-1].get("close") if c1 else None,"latest_candle_time":candle_datetime(c1[-1]).isoformat() if c1 and candle_datetime(c1[-1]) else None,"gap":gap(prev,c1[0].get("open") if c1 else None)},"previous_session":prev,"timeframes":{"1M":trim(c1,"1M"),"5M":trim(c5,"5M"),"15M":trim(c15,"15M"),"1H":trim(c1h,"1H"),"1D":trim(daily,"1D"),"1W":trim(weekly,"1W")},"volume_note":"Underlying index volume is preserved exactly as returned by DHAN; futures volume/OI are captured separately."}
+    if not valid_market(market):
+        print(f"DATA HEALTH FAILED: {name}; no valid market candles returned",flush=True)
+        return {"status":"DATA_FAILED","source":"DHAN","instrument":name,"session_date":session_date.isoformat(),"generated_at":iso_now(),"error":"NO_VALID_MARKET_DATA","market":market}
+    write_json_atomic(config["market_file"],market)
+    futures={"status":"UNAVAILABLE","source":"DHAN","generated_at":iso_now()}
     try:
-        contract=discover_nearest_futures(config["underlying_symbol"]); futures_output=fetch_futures_data(contract,session_date); quote=safe_fetch(f"{name} FUTURES QUOTE/DEPTH",lambda:fetch_market_quote(contract["security_id"]))
-        futures_output["live_quote"]=clean_futures_quote(quote,contract["security_id"]) if isinstance(quote,dict) and "error" not in quote else {"status":"ERROR","details":quote}
-    except Exception as error:
-        print(f"FUTURES ERROR {name}: {error}",flush=True); futures_output={"status":"ERROR","source":"DHAN","generated_at":iso_now(),"message":str(error)}
-    write_json_atomic(config["futures_file"],futures_output)
-    option_output=safe_fetch(f"{name} OPTION CHAIN",lambda:build_option_chain(sid,session_date))
-    if not isinstance(option_output,dict) or "error" in option_output: option_output={"status":"ERROR","source":"DHAN","session_date":session_date.isoformat(),"generated_at":iso_now(),"details":option_output}
-    write_json_atomic(config["option_file"],option_output)
-    snapshot={"status":"LIVE","source":"DHAN","instrument":name,"session_date":session_date.isoformat(),"snapshot_generated_at":iso_now(),"market":market_output,"futures":futures_output,"option_chain":option_output}
+        contract=discover_nearest_futures(config["underlying_symbol"]); futures=fetch_futures(contract,session_date); q=safe_fetch(f"{name} FUTURES QUOTE/DEPTH",lambda:fetch_market_quote(contract["security_id"])); futures["live_quote"]=clean_futures_quote(q,contract["security_id"]) if isinstance(q,dict) and "error" not in q else {"status":"ERROR","details":q}
+    except Exception as e:
+        futures={"status":"ERROR","source":"DHAN","generated_at":iso_now(),"message":str(e)}; print(f"FUTURES ERROR {name}: {e}",flush=True)
+    write_json_atomic(config["futures_file"],futures)
+    option=safe_fetch(f"{name} OPTION CHAIN",lambda:build_option_chain(sid,session_date))
+    if not isinstance(option,dict) or "error" in option: option={"status":"ERROR","source":"DHAN","session_date":session_date.isoformat(),"generated_at":iso_now(),"details":option}
+    write_json_atomic(config["option_file"],option)
+    snapshot={"status":"LIVE","source":"DHAN","instrument":name,"session_date":session_date.isoformat(),"snapshot_generated_at":iso_now(),"market":market,"futures":futures,"option_chain":option}
     write_json_atomic(config["snapshot_file"],snapshot); return snapshot
-
 
 def refresh_all():
     if not refresh_lock.acquire(blocking=False): print("REFRESH SKIPPED: previous cycle still running",flush=True); return False
     try:
-        session_date=now_ist().date(); successful=0
+        date=now_ist().date(); ready=0
         for key,config in INSTRUMENTS.items():
             try:
-                if isinstance(build_instrument(key,config,session_date),dict): successful+=1
-            except Exception as error: print(f"INSTRUMENT BUILD ERROR {key}: {error}",flush=True)
-        print(f"REFRESH COMPLETE {successful}/{len(INSTRUMENTS)}",flush=True); return successful>0
+                result=build_instrument(key,config,date)
+                if isinstance(result,dict) and result.get("status")=="LIVE": ready+=1
+            except Exception as e: print(f"INSTRUMENT BUILD ERROR {key}: {e}",flush=True)
+        print(f"REFRESH COMPLETE: VALID DATA {ready}/{len(INSTRUMENTS)}",flush=True); return ready==len(INSTRUMENTS)
     finally: refresh_lock.release()
-
 
 def live_refresh_worker():
     print("PSYCHO LIVE REFRESH WORKER STARTED",flush=True); last_state=None
     while True:
         try:
-            current=now_ist()
-            if is_market_window(current):
-                if last_state!="OPEN": print(f"MARKET WINDOW OPEN {current.isoformat()}",flush=True); last_state="OPEN"
-                started=time.monotonic(); refresh_all(); duration=time.monotonic()-started; time.sleep(max(1,REFRESH_INTERVAL_SECONDS-duration))
+            cur=now_ist()
+            if is_market_window(cur):
+                if last_state!="OPEN": print(f"MARKET WINDOW OPEN {cur.isoformat()}",flush=True); last_state="OPEN"
+                started=time.monotonic(); refresh_all(); time.sleep(max(1,REFRESH_INTERVAL_SECONDS-(time.monotonic()-started)))
             else:
-                if last_state!="CLOSED": print(f"MARKET WINDOW CLOSED {current.isoformat()}",flush=True); last_state="CLOSED"
+                if last_state!="CLOSED": print(f"MARKET WINDOW CLOSED {cur.isoformat()}",flush=True); last_state="CLOSED"
                 time.sleep(30)
-        except Exception as error: print(f"BACKGROUND WORKER ERROR: {error}",flush=True); time.sleep(10)
+        except Exception as e: print(f"BACKGROUND WORKER ERROR: {e}",flush=True); time.sleep(10)
 
+def get_state(key):
+    cfg=INSTRUMENTS[key]; snap=read_json_file(cfg["snapshot_file"])
+    if snap: return snap
+    return {"status":"WAITING","source":"DHAN","instrument":cfg["display_name"],"market":read_json_file(cfg["market_file"]),"futures":read_json_file(cfg["futures_file"]),"option_chain":read_json_file(cfg["option_file"])}
 
-def get_servable_state(key):
-    config=INSTRUMENTS[key]; snapshot=read_json_file(config["snapshot_file"])
-    if snapshot: return snapshot
-    return {"status":"WAITING","source":"DHAN","instrument":config["display_name"],"market":read_json_file(config["market_file"]),"futures":read_json_file(config["futures_file"]),"option_chain":read_json_file(config["option_file"])}
-
-
-def pretty_value(value): return "N/A" if value is None else str(value)
-
-def readable_candle_time(candle):
-    dt=candle_datetime(candle); return dt.strftime("%Y-%m-%d %H:%M:%S IST") if dt else "N/A"
-
-
-def build_phase2_live_text():
-    lines=["PSYCHO MARKET BRIDGE — PHASE 2 LIVE","="*78,"BRIDGE STATUS: ONLINE","DATA SOURCE: DHAN",f"SERVER TIME: {now_ist().strftime('%Y-%m-%d %H:%M:%S IST')}",f"MARKET STATUS: {market_status()['status']}","LIVE COLLECTION WINDOW: 09:15-15:40 IST",f"LIVE REFRESH TARGET: ~{REFRESH_INTERVAL_SECONDS} SECONDS","UNDERLYING TIMEFRAMES: 1M + 5M + 15M + 1H + 1D + 1W","DERIVATIVES: NEAREST INDEX FUTURE + 5M OHLCV/OI + LIVE QUOTE/5-LEVEL DEPTH","OPTIONS: NEAREST EXPIRY + ATM +/- 10 STRIKES","SESSION POLICY: CURRENT-DAY INTRADAY ONLY"]
-    for key in INSTRUMENTS:
-        state=get_servable_state(key); lines += ["","#"*78,INSTRUMENTS[key]["display_name"],"#"*78]; market=state.get("market") or {}; current=market.get("current_session") or {}; lines.append(f"SNAPSHOT STATUS: {state.get('status')}"); lines.append(f"SESSION DATE: {market.get('session_date',state.get('session_date'))}"); lines.append(f"GENERATED AT: {market.get('generated_at')}"); lines.append(f"LAST PRICE: {pretty_value(current.get('last_price'))}"); lines.append(f"GAP: {pretty_value((current.get('gap') or {}).get('type'))} {pretty_value((current.get('gap') or {}).get('points'))}"); tfs=market.get("timeframes") or {}
-        for tf in ["1M","5M","15M","1H","1D","1W"]:
-            candles=tfs.get(tf) or []; lines.append(f"{tf}: {len(candles)} candles | latest={readable_candle_time(candles[-1]) if candles else 'N/A'}")
-        futures=state.get("futures") or {}; latest=futures.get("latest") or {}; lines += ["","FUTURES",f"STATUS: {futures.get('status')}",f"SYMBOL: {futures.get('trading_symbol')}",f"EXPIRY: {futures.get('expiry')}",f"SECURITY ID: {futures.get('security_id')}",f"5M FUTURES LATEST: {readable_candle_time(latest)} | C={pretty_value(latest.get('close'))} | V={pretty_value(latest.get('volume'))} | OI={pretty_value(latest.get('oi'))}"]; quote=futures.get("live_quote") or {}; lines.append(f"LIVE FUTURES QUOTE: LTP={pretty_value(quote.get('last_price'))} | VOL={pretty_value(quote.get('volume'))} | OI={pretty_value(quote.get('oi'))} | BUYQ={pretty_value(quote.get('buy_quantity'))} | SELLQ={pretty_value(quote.get('sell_quantity'))}"); options=state.get("option_chain") or {}; lines += ["","OPTION CHAIN",f"STATUS: {options.get('status')}",f"EXPIRY: {options.get('expiry')}",f"UNDERLYING LTP: {options.get('underlying_ltp')}",f"ATM: {options.get('atm_strike')}",f"STRIKES: {len(options.get('strikes') or {})}"]
-    lines += ["","="*78,"END — PSYCHO MARKET BRIDGE PHASE 2 LIVE","="*78]; return "\n".join(lines)
-
+def build_phase2_text():
+    lines=["PSYCHO MARKET BRIDGE — PHASE 2 LIVE","="*78,"BRIDGE STATUS: ONLINE",f"AUTH STATUS: {auth_state['status']}","DATA SOURCE: DHAN",f"SERVER TIME: {now_ist().strftime('%Y-%m-%d %H:%M:%S IST')}",f"MARKET STATUS: {market_status()['status']}","LIVE COLLECTION WINDOW: 09:15-15:40 IST",f"REFRESH TARGET: ~{REFRESH_INTERVAL_SECONDS} SECONDS","TIMEFRAMES: 1M + 5M + 15M + 1H + 1D + 1W","DERIVATIVES: NEAREST INDEX FUTURE + 5M OHLCV/OI + LIVE QUOTE/DEPTH","OPTIONS: NEAREST EXPIRY + ATM +/- 10 STRIKES"]
+    for key,cfg in INSTRUMENTS.items():
+        state=get_state(key); market=state.get("market") or {}; cur=market.get("current_session") or {}
+        lines += ["","#"*78,cfg["display_name"],"#"*78,f"STATUS: {state.get('status')}",f"SESSION DATE: {market.get('session_date',state.get('session_date'))}",f"GENERATED AT: {market.get('generated_at')}",f"LAST PRICE: {cur.get('last_price') or 'N/A'}",f"GAP: {(cur.get('gap') or {}).get('type','N/A')} {(cur.get('gap') or {}).get('points','N/A')}" ]
+        tfs=market.get("timeframes") or {}
+        for tf in ("1M","5M","15M","1H","1D","1W"):
+            candles=tfs.get(tf) or []; dt=candle_datetime(candles[-1]) if candles else None; latest=dt.strftime("%Y-%m-%d %H:%M:%S IST") if dt else "N/A"; lines.append(f"{tf}: {len(candles)} candles | latest={latest}")
+        fut=state.get("futures") or {}; latest=fut.get("latest") or {}; quote=fut.get("live_quote") or {}; opt=state.get("option_chain") or {}
+        lines += ["","FUTURES",f"STATUS: {fut.get('status')}",f"SYMBOL: {fut.get('trading_symbol')}",f"EXPIRY: {fut.get('expiry')}",f"SECURITY ID: {fut.get('security_id')}",f"5M FUTURES: {latest.get('close','N/A')} | V={latest.get('volume','N/A')} | OI={latest.get('oi','N/A')}",f"QUOTE: LTP={quote.get('last_price','N/A')} | VOL={quote.get('volume','N/A')} | OI={quote.get('oi','N/A')}","","OPTION CHAIN",f"STATUS: {opt.get('status')}",f"EXPIRY: {opt.get('expiry')}",f"UNDERLYING LTP: {opt.get('underlying_ltp')}",f"ATM: {opt.get('atm_strike')}",f"STRIKES: {len(opt.get('strikes') or {})}"]
+    return "\n".join(lines+["","="*78,"END — PSYCHO MARKET BRIDGE PHASE 2 LIVE","="*78])
 
 app=Flask(__name__)
-
 def text_response(text,status=200): return Response(text,status=status,content_type="text/plain; charset=utf-8")
-
 
 @app.route("/")
 def home():
-    return Response('''<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>PSYCHO TRADING // PHASE 2</title><style>
-*{box-sizing:border-box}html,body{margin:0;min-height:100%;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif;color:#f5f7ff;background:#05050b}body{overflow-x:hidden;background:radial-gradient(circle at 10% 10%,#6b1d75 0,transparent 28%),radial-gradient(circle at 90% 15%,#123f91 0,transparent 30%),radial-gradient(circle at 50% 100%,#731b38 0,transparent 32%),#05050b}.grid{position:fixed;inset:0;pointer-events:none;opacity:.16;background-image:linear-gradient(#fff 1px,transparent 1px),linear-gradient(90deg,#fff 1px,transparent 1px);background-size:55px 55px;mask-image:linear-gradient(to bottom,black,transparent)}.ticker{height:34px;display:flex;align-items:center;gap:34px;padding:0 20px;white-space:nowrap;overflow:hidden;background:rgba(3,3,8,.82);border-bottom:1px solid rgba(255,255,255,.08);font-size:11px;letter-spacing:1.2px;color:#aeb8d7}.up{color:#49f2a3}.warn{color:#ffd166}.wrap{max-width:1400px;margin:auto;padding:24px}.top{display:flex;justify-content:space-between;align-items:center;gap:20px}.brand{font-weight:900;letter-spacing:3px;font-size:20px}.brand span{color:#ff3bd4}.sub{margin-top:4px;color:#8790ad;font-size:11px;letter-spacing:2px}.live{display:flex;align-items:center;gap:9px;padding:9px 13px;border:1px solid rgba(80,255,184,.25);border-radius:999px;background:rgba(20,120,85,.13);color:#63ffc0;font-size:11px;font-weight:800;letter-spacing:1.4px}.dot{width:8px;height:8px;border-radius:50%;background:#63ffc0;box-shadow:0 0 16px #63ffc0}.hero{margin-top:26px;padding:30px;border:1px solid rgba(255,255,255,.09);border-radius:26px;background:linear-gradient(135deg,rgba(255,255,255,.075),rgba(255,255,255,.025));backdrop-filter:blur(16px);box-shadow:0 30px 90px rgba(0,0,0,.35)}h1{font-size:clamp(34px,6vw,78px);line-height:.92;margin:0;letter-spacing:-4px}h1 b{color:#ff35d6;text-shadow:0 0 35px rgba(255,53,214,.35)}.hero p{max-width:760px;color:#aab2cb;line-height:1.6}.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:20px}.chip{padding:8px 11px;border-radius:999px;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.08);font-size:11px;color:#d8def0}.cards{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:18px}.card{position:relative;overflow:hidden;padding:22px;border-radius:22px;background:rgba(9,10,22,.72);border:1px solid rgba(255,255,255,.08);min-height:210px}.card:after{content:"";position:absolute;width:180px;height:180px;right:-70px;top:-70px;border-radius:50%;background:var(--glow);filter:blur(50px);opacity:.22}.card.n{--glow:#ff36d7}.card.b{--glow:#3b8cff}.label{font-size:10px;letter-spacing:2px;color:#858da8}.name{font-size:28px;font-weight:900;margin:8px 0}.status{display:inline-block;padding:6px 9px;border-radius:8px;background:rgba(71,255,173,.09);color:#64ffc0;font-size:10px;font-weight:800}.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:22px}.stat{padding:12px;border-radius:13px;background:rgba(255,255,255,.035)}.stat small{display:block;color:#747d98;font-size:9px;letter-spacing:1px}.stat strong{display:block;margin-top:5px;font-size:15px}.links{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:18px}.link{display:block;text-decoration:none;color:#dce2f5;padding:15px;border-radius:15px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.07);transition:.2s}.link:hover{transform:translateY(-2px);border-color:rgba(255,55,214,.5);background:rgba(255,55,214,.08)}.link b{display:block;font-size:12px}.link span{display:block;margin-top:5px;color:#777f9a;font-size:10px}.footer{padding:24px 0 10px;color:#69718b;font-size:10px;letter-spacing:1px;text-align:center}@media(max-width:800px){.cards{grid-template-columns:1fr}.links{grid-template-columns:1fr 1fr}.wrap{padding:14px}.hero{padding:22px}}@media(max-width:500px){.links{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}}
-</style></head><body><div class="grid"></div><div class="ticker"><span class="up">● PSYCHO MARKET BRIDGE ONLINE</span><span>DHAN // LIVE DATA ENGINE</span><span>1M · 5M · 15M · 1H · 1D · 1W</span><span>OPTIONS ATM ± 10</span><span>FUTURES + OI + DEPTH</span><span class="warn">09:15 → 15:40 IST</span></div><main class="wrap"><header class="top"><div><div class="brand">PSYCHO <span>TRADING</span> // PHASE 2</div><div class="sub">MARKET STRUCTURE ENGINE · LIVE ACQUISITION LAYER</div></div><div class="live"><i class="dot"></i>BRIDGE ONLINE</div></header><section class="hero"><h1>READ THE <b>MARKET.</b><br>WITHOUT THE NOISE.</h1><p>Phase 2 is the live market-data bridge feeding the Psycho Trading architecture. It acquires, refreshes and serves clean NIFTY and BANK NIFTY structure data from DHAN without mixing one trading session with another.</p><div class="chips"><span class="chip">LIVE REFRESH ~60s</span><span class="chip">SESSION ISOLATED</span><span class="chip">PREVIOUS CLOSE → GAP</span><span class="chip">NEAREST FUTURES</span><span class="chip">OI + 5-LEVEL DEPTH</span><span class="chip">NEAREST EXPIRY</span></div></section><section class="cards"><article class="card n"><div class="label">INDEX // 01</div><div class="name">NIFTY</div><span id="ns" class="status">CONNECTING…</span><div class="stats"><div class="stat"><small>LAST</small><strong id="nl">—</strong></div><div class="stat"><small>GAP</small><strong id="ng">—</strong></div><div class="stat"><small>SESSION</small><strong id="nd">—</strong></div></div></article><article class="card b"><div class="label">INDEX // 02</div><div class="name">BANK NIFTY</div><span id="bs" class="status">CONNECTING…</span><div class="stats"><div class="stat"><small>LAST</small><strong id="bl">—</strong></div><div class="stat"><small>GAP</small><strong id="bg">—</strong></div><div class="stat"><small>SESSION</small><strong id="bd">—</strong></div></div></article></section><section class="links"><a class="link" href="/phase2-live"><b>PHASE 2 LIVE</b><span>Readable complete snapshot</span></a><a class="link" href="/bridge-status"><b>BRIDGE STATUS</b><span>Engine health + file state</span></a><a class="link" href="/nifty-live"><b>NIFTY DATA</b><span>1M / 5M / 15M / 1H / 1D / 1W</span></a><a class="link" href="/nifty-option-chain"><b>NIFTY OPTIONS</b><span>Nearest expiry · ATM ±10</span></a><a class="link" href="/banknifty-live"><b>BANK NIFTY DATA</b><span>Full structure dataset</span></a><a class="link" href="/banknifty-option-chain"><b>BANK NIFTY OPTIONS</b><span>Nearest expiry · ATM ±10</span></a></section><div class="footer">PSYCHO MARKET BRIDGE · DHAN · ASIA/KOLKATA · DATA COLLECTION 09:15–15:40 IST</div></main><script>
-async function load(){try{const r=await fetch('/bridge-status',{cache:'no-store'});const d=await r.json();const n=d.instruments?.NIFTY||{};const b=d.instruments?.BANKNIFTY||{};document.getElementById('ns').textContent=n.market_file_exists?'DATA READY':'WAITING';document.getElementById('bs').textContent=b.market_file_exists?'DATA READY':'WAITING';document.getElementById('nd').textContent=n.session_date||'—';document.getElementById('bd').textContent=b.session_date||'—';const [nr,br]=await Promise.all([fetch('/nifty-live',{cache:'no-store'}),fetch('/banknifty-live',{cache:'no-store'})]);const nm=await nr.json(),bm=await br.json();const set=(x,p)=>{const c=x.current_session||{},g=c.gap||{};return [c.last_price,g.type==='UNAVAILABLE'?'—':(g.type+' '+(g.points??''))]};const a=set(nm),q=set(bm);document.getElementById('nl').textContent=a[0]??'—';document.getElementById('ng').textContent=a[1];document.getElementById('bl').textContent=q[0]??'—';document.getElementById('bg').textContent=q[1]}catch(e){document.getElementById('ns').textContent='OFFLINE';document.getElementById('bs').textContent='OFFLINE'}}load();setInterval(load,60000);
-</script></body></html>''',content_type="text/html; charset=utf-8")
-
+    return Response("""<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>PSYCHO TRADING // PHASE 2</title></head><body style='font-family:system-ui;background:#05050b;color:#eee;padding:30px'><h1>PSYCHO TRADING // PHASE 2</h1><p>DHAN live market-data bridge.</p><p><a href='/bridge-status' style='color:#6ff'>Bridge Status</a> · <a href='/auth-status' style='color:#6ff'>Auth Status</a> · <a href='/phase2-live' style='color:#6ff'>Phase 2 Live</a></p></body></html>""",content_type="text/html; charset=utf-8")
 
 @app.route("/phase2-live")
-def phase2_live():
-    try: return text_response(build_phase2_live_text())
-    except Exception as error: return text_response(f"PSYCHO MARKET BRIDGE — PHASE 2 LIVE\n\nSTATUS: ERROR\nMESSAGE: {error}",500)
+def phase2_live(): return text_response(build_phase2_text())
 
+@app.route("/auth-status")
+def auth_status():
+    return jsonify({"service":"PSYCHO MARKET BRIDGE","authentication":{"status":auth_state["status"],"client_id_present":bool(CLIENT_ID),"access_token_present":bool(TOKEN),"totp_configured":bool(TOTP_SECRET),"pin_configured":bool(DHAN_PIN),"last_success":auth_state["last_success"],"last_error":auth_state["last_error"],"token_expiry":auth_state["expiry"]}})
 
 @app.route("/bridge-status")
 def bridge_status():
-    status={}
-    for key,config in INSTRUMENTS.items():
-        snap=read_json_file(config["snapshot_file"]); status[key]={"market_file_exists":os.path.exists(config["market_file"]),"option_file_exists":os.path.exists(config["option_file"]),"futures_file_exists":os.path.exists(config["futures_file"]),"snapshot_file_exists":os.path.exists(config["snapshot_file"]),"session_date":snap.get("session_date") if isinstance(snap,dict) else None,"snapshot_generated_at":snap.get("snapshot_generated_at") if isinstance(snap,dict) else None}
-    return jsonify({"service":"PSYCHO MARKET BRIDGE","server":"ONLINE","source":"DHAN","server_time":iso_now(),"market":market_status(),"refresh_target_seconds":REFRESH_INTERVAL_SECONDS,"instruments":status})
-
+    instruments={}
+    for key,cfg in INSTRUMENTS.items():
+        snap=read_json_file(cfg["snapshot_file"]); market=(snap or {}).get("market") if isinstance(snap,dict) else {}
+        instruments[key]={"data_ready":bool(snap and snap.get("status")=="LIVE" and valid_market(market)),"market_file_exists":os.path.exists(cfg["market_file"]),"option_file_exists":os.path.exists(cfg["option_file"]),"futures_file_exists":os.path.exists(cfg["futures_file"]),"snapshot_file_exists":os.path.exists(cfg["snapshot_file"]),"session_date":snap.get("session_date") if isinstance(snap,dict) else None,"snapshot_generated_at":snap.get("snapshot_generated_at") if isinstance(snap,dict) else None,"last_price":((market or {}).get("current_session") or {}).get("last_price")}
+    return jsonify({"service":"PSYCHO MARKET BRIDGE","server":"ONLINE","source":"DHAN","server_time":iso_now(),"market":market_status(),"authentication":auth_state,"data_health":"READY" if all(v["data_ready"] for v in instruments.values()) else "FAILED","refresh_target_seconds":REFRESH_INTERVAL_SECONDS,"instruments":instruments})
 
 def file_json(filename,waiting):
-    data=read_json_file(filename); return (jsonify(data),200) if data is not None else (jsonify({"status":"WAITING","source":"DHAN","message":waiting}),503)
-
+    data=read_json_file(filename)
+    return (jsonify(data),200) if data is not None else (jsonify({"status":"WAITING","source":"DHAN","message":waiting}),503)
 
 @app.route("/nifty-live")
 def nifty_live(): return file_json(INSTRUMENTS["NIFTY"]["market_file"],"NIFTY market data unavailable")
@@ -347,7 +413,8 @@ def banknifty_option_chain(): return file_json(INSTRUMENTS["BANKNIFTY"]["option_
 @app.route("/banknifty-futures-live")
 def banknifty_futures_live(): return file_json(INSTRUMENTS["BANKNIFTY"]["futures_file"],"BANK NIFTY futures data unavailable")
 
-
 if __name__ == "__main__":
-    print("PSYCHO MARKET BRIDGE STARTING",flush=True); print("SOURCE: DHAN",flush=True); print("DATA: 1M/5M/15M/1H/1D/1W + VOLUME + FUTURES OI + OPTION CHAIN + DEPTH",flush=True); print("LIVE WINDOW: 09:15-15:40 IST",flush=True)
+    print("PSYCHO MARKET BRIDGE STARTING",flush=True); print("SOURCE: DHAN",flush=True); print("DATA: 1M/5M/15M/1H/1D/1W + FUTURES OI + OPTION CHAIN + DEPTH",flush=True); print("LIVE WINDOW: 09:15-15:40 IST",flush=True)
+    validate_auth()
+    if not TOKEN and not (TOTP_SECRET and DHAN_PIN): print("AUTH CONFIGURATION REQUIRED: set DHAN_ACCESS_TOKEN or DHAN_PIN + DHAN_TOTP_SECRET",flush=True)
     threading.Thread(target=live_refresh_worker,daemon=True,name="psycho-live-refresh").start(); port=int(os.environ.get("PORT",10000)); app.run(host="0.0.0.0",port=port,threaded=True,use_reloader=False)
