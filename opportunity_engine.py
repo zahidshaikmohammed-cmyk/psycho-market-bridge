@@ -1,5 +1,6 @@
 # PSYCHO OPPORTUNITY ENGINE — precision wrapper
-# Runs the production engine with a no-lookahead guard and the Replay Lab.
+# Load the production engine without executing its blocking __main__ server,
+# then register Replay Lab routes on the same Flask app.
 source=open("opportunity_engine_v4.py",encoding="utf-8").read()
 source=source.replace(
     'c5,c15,c1h=tf(raw,"5M"),tf(raw,"15M"),tf(raw,"1H")',
@@ -9,5 +10,11 @@ source=source.replace(
     '<div class="row"><span>Entry / Actual LTP</span><b>{{x.entry}}</b></div>',
     '<div class="row"><span>Entry Price</span><b>{{x.entry}}</b></div><div class="row"><span>Actual LTP</span><b>{{x.live}}</b></div>'
 )
+# opportunity_engine.py is the actual process entrypoint, so prevent the
+# embedded v4 source from calling app.run() before Replay Lab routes load.
+source=source.replace('if __name__=="__main__":app.run(host="0.0.0.0",port=10000)', '# embedded server disabled; wrapper starts the app after all routes are registered')
 exec(source,globals())
 exec(open("replay_lab.py",encoding="utf-8").read(),globals())
+
+if __name__=="__main__":
+    app.run(host="0.0.0.0",port=10000)
