@@ -47,3 +47,5 @@ jobs:
           name: psycho-batch2b-expired-options-FULL
           path: research_data/batch2b_expired_options/
           retention-days: 30
+
+# FORCE RUN: Batch 2B FULL acquisition
