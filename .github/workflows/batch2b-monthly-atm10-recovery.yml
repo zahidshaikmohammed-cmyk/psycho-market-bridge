@@ -1,0 +1,50 @@
+name: PSYCHO Batch 2B-X — BANKNIFTY Monthly ATM±10 Recovery
+
+on:
+  workflow_dispatch:
+    inputs:
+      from_date:
+        description: "Start date (YYYY-MM-DD)"
+        required: true
+        default: "2025-08-11"
+      to_date:
+        description: "End date (YYYY-MM-DD)"
+        required: true
+        default: "2026-08-09"
+
+jobs:
+  recover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    env:
+      DHAN_ACCESS_TOKEN: ${{ secrets.DHAN_ACCESS_TOKEN }}
+      DHAN_CLIENT_ID: ${{ secrets.DHAN_CLIENT_ID }}
+      BATCH2BX_FROM: ${{ inputs.from_date }}
+      BATCH2BX_TO: ${{ inputs.to_date }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Verify Dhan secrets exist
+        run: |
+          test -n "$DHAN_CLIENT_ID"
+          test -n "$DHAN_ACCESS_TOKEN"
+
+      - name: Run isolated BANKNIFTY monthly ATM±10 recovery
+        run: python batch2b_monthly_atm10_recovery.py
+
+      - name: Upload recovered data
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: psycho-batch2b-monthly-atm10-recovery
+          path: research_data/batch2b_monthly_atm10_recovery/
+          retention-days: 30
