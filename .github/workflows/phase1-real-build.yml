@@ -1,0 +1,65 @@
+name: Phase 1 Real Market Memory Build
+
+on:
+  push:
+    branches: [phase1-market-memory-v1]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Acquire 12 months of NIFTY and BANKNIFTY 5M history
+        env:
+          DHAN_ACCESS_TOKEN: ${{ secrets.DHAN_ACCESS_TOKEN }}
+          HISTORICAL_START_DATE: "2025-08-12"
+          HISTORICAL_END_DATE: "2026-08-12"
+          HISTORICAL_OUTPUT_DIR: "research_data"
+          HISTORICAL_REQUEST_DELAY: "0.35"
+        run: python historical_downloader.py
+
+      - name: Build Phase 1 Market Memory
+        env:
+          PSYCHO_RESEARCH_ROOT: "research_data"
+          PSYCHO_MEMORY_ROOT: "phase1_memory"
+        run: python phase1_market_memory.py
+
+      - name: Validate generated memory
+        env:
+          PSYCHO_RESEARCH_ROOT: "research_data"
+          PSYCHO_MEMORY_ROOT: "phase1_memory"
+        run: |
+          python -m py_compile phase1_market_memory.py historical_downloader.py
+          test -s phase1_memory/manifest.json
+          test -s phase1_memory/dataset_catalog.json
+          test -s phase1_memory/session_memory.jsonl
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          m=json.loads(Path('phase1_memory/manifest.json').read_text())
+          assert m['phase']=='PHASE_1_MARKET_MEMORY'
+          assert m['dataset_count'] >= 2
+          assert m['session_count'] > 0
+          print('PHASE1_REAL_BUILD_VALIDATION=PASS')
+          print('DATASETS=', m['dataset_count'])
+          print('SESSIONS=', m['session_count'])
+          PY
+
+      - name: Upload Phase 1 research artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: psycho-phase1-market-memory
+          path: |
+            research_data/
+            phase1_memory/
+          retention-days: 30
