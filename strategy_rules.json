@@ -1,24 +1,20 @@
 {
   "name": "FILTERED_ORB",
-  "enabled": false,
-  "opening_range": {
-    "start": "09:15",
-    "end": "09:45"
-  },
-  "entry_window": {
-    "start": "09:45",
-    "end": "15:00"
-  },
+  "enabled": true,
+  "opening_range": {"start": "09:15", "end": "09:45", "timeframe": "5M"},
+  "breakout": {"confirmation": "5M_CLOSE_OUTSIDE_ORB", "retest_required": true, "retest_max_bars": 3, "retest_tolerance_points": 5},
+  "entry_window": {"start": "09:45", "end": "11:30"},
   "filters": {
     "vwap_required": true,
+    "volume_required": true,
+    "volume_lookback_bars": 20,
+    "volume_multiplier": 1.5,
     "relative_strength_required": true,
+    "relative_strength_min_pct_points": 0.10,
     "oi_confirmation_required": true,
-    "volume_confirmation_required": true,
-    "breakout_retest_required": true,
-    "option_premium_confirmation_required": true
+    "oi_wall_max_distance_points": 100
   },
-  "risk": {
-    "one_trade_per_instrument_per_day": true
-  },
-  "note": "Do not enable until the exact source rulebook and numerical definitions for every filter are locked. The engine must not invent missing triggers."
+  "execution": {"instrument": "NEAREST_EXPIRY_ATM_OPTION", "direction_long": "CE", "direction_short": "PE", "stop_reference": "OPPOSITE_ORB_EDGE", "target_reference": "NEAREST_OI_WALL"},
+  "risk": {"one_trade_per_instrument_per_day": true},
+  "note": "Live deterministic implementation contract. Missing data means NO SIGNAL. No order placement."
 }
