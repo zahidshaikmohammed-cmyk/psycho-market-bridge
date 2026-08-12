@@ -1,0 +1,40 @@
+name: Phase 1 Market Memory Validation
+
+on:
+  push:
+    branches:
+      - phase1-market-memory-v1
+  workflow_dispatch:
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Syntax check
+        run: python -m py_compile phase1_market_memory.py
+      - name: Functional validation
+        run: |
+          rm -rf test_research test_memory
+          mkdir -p test_research
+          cat > test_research/sample.csv <<'EOF'
+          timestamp,open,high,low,close,volume,oi
+          2026-08-10T09:15:00+05:30,100,105,99,104,1000,200
+          2026-08-10T09:20:00+05:30,104,106,103,105,1200,220
+          2026-08-10T09:25:00+05:30,105,107,104,106,1400,240
+          EOF
+          PSYCHO_RESEARCH_ROOT=test_research PSYCHO_MEMORY_ROOT=test_memory python phase1_market_memory.py
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          m=json.loads(Path('test_memory/manifest.json').read_text())
+          assert m['status']=='BUILT'
+          assert m['dataset_count']==1
+          assert m['session_count']==1
+          assert Path('test_memory/dataset_catalog.json').exists()
+          assert Path('test_memory/session_memory.jsonl').exists()
+          print('PHASE1_VALIDATION_OK')
+          PY
