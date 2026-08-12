@@ -63,3 +63,5 @@ jobs:
             research_data/
             phase1_memory/
           retention-days: 30
+
+# Trigger real acquisition/build validation after workflow installation.
