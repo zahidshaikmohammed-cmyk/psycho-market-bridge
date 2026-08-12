@@ -1,4 +1,4 @@
-name: Phase 1 Real Market Memory Build
+name: Phase 1 Complete Market Memory Build
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    timeout-minutes: 45
+    timeout-minutes: 180
 
     steps:
       - name: Checkout repository
@@ -19,14 +19,14 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Acquire 12 months of NIFTY and BANKNIFTY 5M history
+      - name: Acquire complete Phase 1 historical evidence
         env:
           DHAN_ACCESS_TOKEN: ${{ secrets.DHAN_ACCESS_TOKEN }}
-          HISTORICAL_START_DATE: "2025-08-12"
+          HISTORICAL_START_DATE: "2021-08-12"
           HISTORICAL_END_DATE: "2026-08-12"
           HISTORICAL_OUTPUT_DIR: "research_data"
-          HISTORICAL_REQUEST_DELAY: "0.35"
-        run: python historical_downloader.py
+          HISTORICAL_REQUEST_DELAY: "0.25"
+        run: python phase1_full_acquisition.py
 
       - name: Build Phase 1 Market Memory
         env:
@@ -34,12 +34,13 @@ jobs:
           PSYCHO_MEMORY_ROOT: "phase1_memory"
         run: python phase1_market_memory.py
 
-      - name: Validate generated memory
+      - name: Validate complete Phase 1 build
         env:
           PSYCHO_RESEARCH_ROOT: "research_data"
           PSYCHO_MEMORY_ROOT: "phase1_memory"
         run: |
-          python -m py_compile phase1_market_memory.py historical_downloader.py
+          python -m py_compile phase1_full_acquisition.py phase1_market_memory.py historical_downloader.py
+          test -s research_data/acquisition_manifest.json
           test -s phase1_memory/manifest.json
           test -s phase1_memory/dataset_catalog.json
           test -s phase1_memory/session_memory.jsonl
@@ -47,21 +48,27 @@ jobs:
           import json
           from pathlib import Path
           m=json.loads(Path('phase1_memory/manifest.json').read_text())
+          a=json.loads(Path('research_data/acquisition_manifest.json').read_text())
           assert m['phase']=='PHASE_1_MARKET_MEMORY'
-          assert m['dataset_count'] >= 2
+          assert a['acquisition']=='FULL'
+          assert a['indices']==['NIFTY','BANKNIFTY']
+          assert set(a['index_timeframes']) == {'1','5','15','60'}
+          assert a['futures_timeframe']=='5'
+          assert a['options_timeframe']=='5'
+          assert len(a['options_strikes']) == 21
+          assert set(a['options_expiry_flags']) == {'WEEK','MONTH'}
+          assert m['dataset_count'] >= 10
           assert m['session_count'] > 0
-          print('PHASE1_REAL_BUILD_VALIDATION=PASS')
+          print('PHASE1_COMPLETE_BUILD_VALIDATION=PASS')
           print('DATASETS=', m['dataset_count'])
           print('SESSIONS=', m['session_count'])
           PY
 
-      - name: Upload Phase 1 research artifacts
+      - name: Upload complete Phase 1 research artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: psycho-phase1-market-memory
+          name: psycho-phase1-complete-market-memory
           path: |
             research_data/
             phase1_memory/
           retention-days: 30
-
-# Trigger real acquisition/build validation after workflow installation.
