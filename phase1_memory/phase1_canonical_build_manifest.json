@@ -1,0 +1,37 @@
+{
+  "project": "PSYCHO SIGNAL FACTORY",
+  "phase": "PHASE_1_MARKET_MEMORY",
+  "build_status": "BUILT_FROM_CANONICAL_UPLOADED_DATA",
+  "as_of": "2026-08-12",
+  "data_sources": {
+    "underlying": "psycho-batch1-underlying",
+    "five_min": "psycho-phase1-market-memory",
+    "futures": "psycho-batch2a-continuous-futures",
+    "options_full": "psycho-batch2b-expired-options-FULL",
+    "options_monthly_recovery": "psycho-batch2b-monthly-atm10-recovery",
+    "contract_daily": "psycho-batch3-contract-daily-derivatives"
+  },
+  "coverage": {
+    "underlying_timeframes": ["1M", "5M", "15M", "1H"],
+    "underlying_instruments": ["NIFTY", "BANKNIFTY"],
+    "historical_window": "~1 year",
+    "futures": "daily continuous with OI",
+    "options": "5M expired options with supplied ATM-offset coverage",
+    "contract_daily": "manifest present; 0 validated contracts in supplied batch"
+  },
+  "counts": {
+    "underlying_rows": 199008,
+    "five_min_candles_each": 18498,
+    "five_min_sessions_each": 247,
+    "expired_option_files": 2184,
+    "monthly_recovery_option_files": 1638,
+    "session_memory_rows": 490
+  },
+  "known_gaps": [
+    "Batch 3 contract-daily derivatives manifest contains 0 validated contracts.",
+    "Batch 2A supplied continuous futures are daily, not intraday.",
+    "Batch 1 underlying source ends 2026-08-07; supplied 5M source extends through 2026-08-12.",
+    "Monthly ATM10 recovery supplied BANKNIFTY files; NIFTY monthly recovery is not present in that bundle."
+  ],
+  "validation_basis": "Source manifests validated; supplied Dhan 5M acquisition quality report validated; Phase 1 session memory generated from canonical underlying 1M data."
+}
