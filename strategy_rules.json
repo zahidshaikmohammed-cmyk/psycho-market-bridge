@@ -1,0 +1,24 @@
+{
+  "name": "FILTERED_ORB",
+  "enabled": false,
+  "opening_range": {
+    "start": "09:15",
+    "end": "09:45"
+  },
+  "entry_window": {
+    "start": "09:45",
+    "end": "15:00"
+  },
+  "filters": {
+    "vwap_required": true,
+    "relative_strength_required": true,
+    "oi_confirmation_required": true,
+    "volume_confirmation_required": true,
+    "breakout_retest_required": true,
+    "option_premium_confirmation_required": true
+  },
+  "risk": {
+    "one_trade_per_instrument_per_day": true
+  },
+  "note": "Do not enable until the exact source rulebook and numerical definitions for every filter are locked. The engine must not invent missing triggers."
+}
