@@ -8,6 +8,15 @@ app = Flask(__name__)
 def worker():
     signal_engine.run_loop()
 
+@app.get('/')
+def root():
+    return jsonify({
+        'status': 'ONLINE',
+        'service': 'PSYCHO SIGNAL ENGINE',
+        'endpoints': ['/health', '/signal'],
+        'mode': 'SIGNAL_ONLY'
+    })
+
 @app.get('/health')
 def health():
     return jsonify({'status':'ONLINE','service':'PSYCHO SIGNAL ENGINE'})
