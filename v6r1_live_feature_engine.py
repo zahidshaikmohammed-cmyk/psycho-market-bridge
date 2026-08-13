@@ -19,8 +19,12 @@ FEATURES = [
 ]
 
 
+def load_json(path):
+    return json.loads(Path(path).read_text()) if Path(path).exists() else {}
+
+
 def candles(path):
-    obj = json.loads(Path(path).read_text())
+    obj = load_json(path)
     rows = (obj.get("timeframes") or {}).get("5M") or []
     if not rows:
         rows = (obj.get("timeframes") or {}).get("1M") or []
@@ -44,40 +48,27 @@ def core(df):
     ret_1 = close.pct_change(1)
     rv20 = ret_1.rolling(20).std()
     return {
-        "ret_1": float(ret_1.iloc[-1]),
-        "ema_spread": float(ema_spread.iloc[-1]),
-        "trend_score": float(trend_score.iloc[-1]),
-        "atr_pct": float(atr_pct.iloc[-1]),
-        "rv20": float(rv20.iloc[-1]),
-        "mom12": float(mom12.iloc[-1]),
+        "ret_1": float(ret_1.iloc[-1]), "ema_spread": float(ema_spread.iloc[-1]),
+        "trend_score": float(trend_score.iloc[-1]), "atr_pct": float(atr_pct.iloc[-1]),
+        "rv20": float(rv20.iloc[-1]), "mom12": float(mom12.iloc[-1]),
     }
 
 
 def option_features(path):
-    obj = json.loads(Path(path).read_text())
+    obj = load_json(path)
     strikes = obj.get("strikes") or {}
     ce_oi = pe_oi = ce_vol = pe_vol = 0.0
-    iv = []
-    contracts = 0
     for row in strikes.values():
-        contracts += 1
-        for side, acc in (("CE", "ce"), ("PE", "pe")):
+        for side in ("CE", "PE"):
             leg = row.get(side) or {}
-            oi = float(leg.get("oi") or 0)
-            vol = float(leg.get("volume") or 0)
+            oi = float(leg.get("oi") or 0); vol = float(leg.get("volume") or 0)
             if side == "CE": ce_oi += oi; ce_vol += vol
             else: pe_oi += oi; pe_vol += vol
-            g = leg.get("greeks") or {}
-            if g.get("iv") is not None:
-                try: iv.append(float(g["iv"]))
-                except (TypeError, ValueError): pass
-    pcr_oi = pe_oi / ce_oi if ce_oi else np.nan
-    pcr_vol = pe_vol / ce_vol if ce_vol else np.nan
     return {
-        "deriv_pcr_oi": pcr_oi,
-        "deriv_pcr_volume": pcr_vol,
-        "deriv_iv_skew": np.nan,  # exact V6 mapping not proven
-        "deriv_contracts": float(contracts),
+        "deriv_pcr_oi": pe_oi / ce_oi if ce_oi else np.nan,
+        "deriv_pcr_volume": pe_vol / ce_vol if ce_vol else np.nan,
+        "deriv_iv_skew": np.nan,  # exact V6 mapping remains unresolved
+        "deriv_contracts": float(len(strikes)),
     }
 
 
@@ -90,18 +81,15 @@ def build(data_dir):
     root = Path(data_dir)
     bank = core(candles(root / "banknifty-live.json"))
     nifty = core(candles(root / "nifty-live.json"))
-    opt = option_features(root / "banknifty-option-chain.json")
-    state = {**bank, "other_trend": nifty["trend_score"], "other_rv": nifty["rv20"], **opt}
+    state = {**bank, "other_trend": nifty["trend_score"], "other_rv": nifty["rv20"]}
+    state.update(option_features(root / "banknifty-option-chain.json"))
 
-    # These mappings are intentionally blocked until the original V6
-    # transformation is proven row-by-row.
-    unresolved = [
-        "trend_bucket", "mom_bucket", "vol_bucket", "other_trend_bucket",
-        "prior_oi_change", "deriv_score", "futures_prior_oi_change",
-        "deriv_iv_skew",
-    ]
-    missing = [k for k in FEATURES if k not in state or not finite(state[k])]
-    missing = sorted(set(missing + unresolved))
+    # Optional bridge-side upstream feature state. These fields are accepted
+    # only when explicitly supplied; nothing unresolved is synthesized here.
+    upstream = load_json(root / "banknifty-v6r1-upstream.json")
+    state.update(upstream.get("features") or upstream)
+
+    missing = sorted(k for k in FEATURES if k not in state or not finite(state[k]))
     if missing:
         raise RuntimeError("FAIL_CLOSED_UNRESOLVED_V6_FEATURES:" + ",".join(missing))
     return state
@@ -113,4 +101,4 @@ if __name__ == "__main__":
     result = build(sys.argv[1])
     result.update({"contract": "BANKNIFTY_V6R1_19F_V1", "source": "DHAN_PHASE2_BRIDGE"})
     Path(sys.argv[2]).write_text(json.dumps(result, indent=2))
-    print(json.dumps({"status": "OK", "output": sys.argv[2]}))
+    print(json.dumps({"status": "OK", "output": sys.argv[2], "contract": result["contract"]}))
