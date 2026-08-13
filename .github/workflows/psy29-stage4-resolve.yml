@@ -1,0 +1,34 @@
+name: PSY29 Stage 4 - Resolve Dhan Security IDs
+
+on:
+  workflow_dispatch:
+
+jobs:
+  resolve:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Resolve 29 Dhan security IDs
+        run: |
+          python3 psy29_dhan_instrument_resolver.py
+
+      - name: Verify complete 29-stock mapping
+        run: |
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          p = Path('config/ps29_dhan_security_map.json')
+          d = json.loads(p.read_text())
+          assert d['complete'] is True
+          assert len(d['resolved']) == 29
+          assert not d['failures']
+          print('PSY29 STAGE 4 RESOLUTION: PASS — 29/29')
+          PY
+
+      - name: Upload resolved mapping
+        uses: actions/upload-artifact@v4
+        with:
+          name: ps29-stage4-security-map
+          path: config/ps29_dhan_security_map.json
