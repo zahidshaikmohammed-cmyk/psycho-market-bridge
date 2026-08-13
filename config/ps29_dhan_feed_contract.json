@@ -1,0 +1,26 @@
+{
+  "schema_version": "1.0",
+  "status": "LOCKED",
+  "stage": 4,
+  "source": "DHAN",
+  "transport": "DhanHQ v2 WebSocket",
+  "exchange_segment": "NSE_EQ",
+  "instrument": "EQUITY",
+  "required_instruments": 29,
+  "subscription_request_code": 17,
+  "subscription_mode": "QUOTE",
+  "security_id_source": "config/ps29_dhan_security_map.json",
+  "credentials": {
+    "access_token": "environment_only",
+    "client_id": "environment_only"
+  },
+  "rules": [
+    "Never hard-code DHAN credentials.",
+    "Never subscribe an unknown symbol.",
+    "Never substitute a missing security ID.",
+    "Refuse startup when the security map is incomplete.",
+    "29/29 resolved instruments are required before live acquisition is enabled.",
+    "One failed instrument must not silently become another instrument."
+  ],
+  "next": "Stage 5 - Live regime engine"
+}
